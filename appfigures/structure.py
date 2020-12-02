@@ -4,7 +4,7 @@
 Модуль содержит структуры данных, используемые в проекте
 """
 
-from typing import NamedTuple, Optional
+from typing import NamedTuple
 
 
 class ReportParams(NamedTuple):

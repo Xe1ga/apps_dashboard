@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 import requests
 
-from typing import Optional, Generator
-from datetime import datetime
+from typing import Generator
 from json.decoder import JSONDecodeError
 
 from appfigures.structure import ReportParams
