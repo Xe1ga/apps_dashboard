@@ -75,7 +75,6 @@ def get_response_content_with_pagination(url: str, report_params: ReportParams) 
     :param report_params:
     :return:
     """
-    print("+++++++++++")
     this_page = pages = 1
     while this_page <= pages:
         data = get_deserialize_response_data(
