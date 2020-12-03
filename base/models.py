@@ -17,7 +17,7 @@ class Review(Base):
     stars = Column(SmallInteger)
     game_id = Column(Integer, ForeignKey('game.id', ondelete='CASCADE'))
 
-    game = relationship("Game", back_populates="review")
+    game = relationship("Game", back_populates="reviews")
 
     def __repr__(self):
         return f"<Review({self.author}, {self.content})>"
@@ -34,7 +34,7 @@ class Game(Base):
     store = Column(String(50), nullable=False)
     icon_link = Column(String(2048))
 
-    review = relationship("Review", back_populates="game", cascade="all, delete", passive_deletes=True)
+    reviews = relationship("Review", back_populates="game", order_by="Review.pub_date", cascade="all, delete", passive_deletes=True)
 
     def __repr__(self):
         return f"<Game({self.app_id_in_appfigure}, {self.game_name})>"
