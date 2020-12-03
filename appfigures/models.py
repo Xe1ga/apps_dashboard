@@ -15,7 +15,7 @@ class Review(Base):
     author = Column(String(50), nullable=False)
     pub_date = Column(DateTime, nullable=False)
     stars = Column(SmallInteger)
-    game_id = Column(Integer, ForeignKey('game.id'))
+    game_id = Column(Integer, ForeignKey('game.id', ondelete='CASCADE'))
 
     game = relationship("Game", back_populates="review")
 
@@ -27,7 +27,7 @@ class Game(Base):
     __tablename__ = 'game'
 
     id = Column(Integer, primary_key=True)
-    app_id_in_appfigure = Column(SmallInteger, nullable=False)
+    app_id_in_appfigure = Column(SmallInteger, nullable=False, unique=True)
     app_id_in_store = Column(String(50), nullable=False)
     game_name = Column(String(50), nullable=False)
     id_store = Column(SmallInteger, nullable=False)
