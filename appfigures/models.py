@@ -34,7 +34,7 @@ class Game(Base):
     store = Column(String(50), nullable=False)
     icon_link = Column(String(2048))
 
-    review = relationship("Review", back_populates="game")
+    review = relationship("Review", back_populates="game", cascade="all, delete", passive_deletes=True)
 
     def __repr__(self):
         return f"<Game({self.app_id_in_appfigure}, {self.game_name})>"
