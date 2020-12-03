@@ -1,24 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import requests
 
 from typing import Generator
 from json.decoder import JSONDecodeError
 
-from appfigures.structure import ReportParams
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError
 
+from settings import USERNAME, APP_KEY, PASSWORD, BASE_URL, RECORDS_PER_PAGE
 
-def _get_response(url: str, report_params: ReportParams, querystring_params: dict) -> requests.Response:
+
+def _get_response(url: str, querystring_params: dict) -> requests.Response:
     """
     Получить объект ответа requests.Response
     :param url:
-    :param report_params:
     :param querystring_params:
     :return:
     """
-    headers = {"X-Client-Key": report_params.app_key}
-    auth = (report_params.username, report_params.password)
+    headers = {"X-Client-Key": APP_KEY}
+    auth = (USERNAME, PASSWORD)
     http_error_codes = {
         400: "Один из параметров в запросе неверен или недействителен."
              " Проверьте тело для получения дополнительной информации.",
@@ -29,7 +30,7 @@ def _get_response(url: str, report_params: ReportParams, querystring_params: dic
     }
 
     try:
-        response = requests.get(report_params.base_url + url.lstrip("/"),
+        response = requests.get(BASE_URL + url.lstrip("/"),
                                 auth=auth,
                                 params=querystring_params,
                                 headers=headers)
@@ -49,15 +50,14 @@ def _get_response(url: str, report_params: ReportParams, querystring_params: dic
     return response
 
 
-def get_deserialize_response_data(url: str, report_params: ReportParams, **querystring_params) -> dict:
+def get_deserialize_response_data(url: str, **querystring_params) -> dict:
     """
     Получить десериализованные данные ответа Response и часть необходимых заголовков
     :param url:
-    :param report_params:
     :param querystring_params:
     :return:
     """
-    response = _get_response(url, report_params, querystring_params)
+    response = _get_response(url, querystring_params)
 
     try:
         response_json = response.json()
@@ -67,20 +67,18 @@ def get_deserialize_response_data(url: str, report_params: ReportParams, **query
     return response_json
 
 
-def get_response_content_with_pagination(url: str, report_params: ReportParams) -> Generator:
+def get_response_content_with_pagination(url: str) -> Generator:
     """
     Формирует генератор объектов поиска постранично
     :param url:
-    :param report_params:
     :return:
     """
     this_page = pages = 1
     while this_page <= pages:
         data = get_deserialize_response_data(
             url,
-            report_params,
             page=this_page,
-            count=report_params.records_per_page
+            count=RECORDS_PER_PAGE
             )
         yield data.get('reviews')
         pages = data.get('pages')

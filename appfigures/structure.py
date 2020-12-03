@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 """
@@ -7,11 +8,3 @@
 from typing import NamedTuple
 
 
-class ReportParams(NamedTuple):
-    """Параметры отчета"""
-    username: str
-    password: str
-    app_key: str
-    base_url: str
-    period_days: int
-    records_per_page: int

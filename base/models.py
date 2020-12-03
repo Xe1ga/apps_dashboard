@@ -1,10 +1,10 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-
-Base = declarative_base()
+from connect import Base
 
 
 class Review(Base):
