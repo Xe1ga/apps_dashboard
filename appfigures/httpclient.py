@@ -46,7 +46,6 @@ def _get_response(url: str, querystring_params: dict) -> requests.Response:
                 f"Возникла HTTP ошибка, код ошибки: {err.response.status_code}."
             )
         )
-    print(response)
     return response
 
 

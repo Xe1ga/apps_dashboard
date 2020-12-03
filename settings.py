@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from envparse import env
 
 # Подключение к API
@@ -27,7 +28,15 @@ DB_PASSWORD = env.str('DB_PASSWORD')
 
 
 # Настройки проекта
+
+GAMES = env.dict('GAMES')
+
+
 # Период хранения данных в БД в днях
 PERIOD_DAYS = env.int('PERIOD_DAYS')
 
 RECORDS_PER_PAGE = env.int('RECORDS_PER_PAGE')
+
+PRODUCTS_ENDPOINT = env.str('PRODUCTS_ENDPOINT')
+
+REVIEWS_ENDPOINT = env.str('REVIEWS_ENDPOINT')

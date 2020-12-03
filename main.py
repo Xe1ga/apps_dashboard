@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from envparse import env
+import base.queries
+from appfigures.loader import get_games_info
 
-from appfigures.httpclient import get_response_content_with_pagination, get_deserialize_response_data
-
-from settings import USERNAME
-from base.connect import connection_string
 
 def run():
-    print(connection_string)
+    get_games_info()
 
 
 if __name__ == "__main__":
