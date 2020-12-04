@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import base.queries
-from appfigures.loader import get_games_info
+from base.queries import update_game_table
 
 
 def run():
-    get_games_info()
+    update_game_table()
 
 
 if __name__ == "__main__":

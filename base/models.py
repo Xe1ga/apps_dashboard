@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime
+from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime, BigInteger
 from sqlalchemy.orm import relationship
 
-from connect import Base
+from base.connect import Base
 
 
 class Review(Base):
     __tablename__ = 'review'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     content = Column(Text)
     author = Column(String(50), nullable=False)
     pub_date = Column(DateTime, nullable=False)
@@ -27,7 +27,7 @@ class Game(Base):
     __tablename__ = 'game'
 
     id = Column(Integer, primary_key=True)
-    app_id_in_appfigure = Column(SmallInteger, nullable=False, unique=True)
+    app_id_in_appfigure = Column(BigInteger, nullable=False, unique=True)
     app_id_in_store = Column(String(50), nullable=False)
     game_name = Column(String(50), nullable=False)
     id_store = Column(SmallInteger, nullable=False)
