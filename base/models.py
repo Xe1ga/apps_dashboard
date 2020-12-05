@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime, BigInteger
+from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime, BigInteger, Float
 from sqlalchemy.orm import relationship
 
 from base.connect import Base
@@ -12,9 +12,9 @@ class Review(Base):
 
     id = Column(BigInteger, primary_key=True)
     content = Column(Text)
-    author = Column(String(50), nullable=False)
+    author = Column(String(100), nullable=False)
     pub_date = Column(DateTime, nullable=False)
-    stars = Column(SmallInteger)
+    stars = Column(Float)
     game_id = Column(Integer, ForeignKey('game.id', ondelete='CASCADE'))
 
     game = relationship("Game", back_populates="reviews")

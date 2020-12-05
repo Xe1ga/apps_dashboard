@@ -32,8 +32,8 @@ DB_PASSWORD = env.str('DB_PASSWORD')
 GAMES = env.dict('GAMES')
 
 
-# Период хранения данных в БД в днях
-PERIOD_DAYS = env.int('PERIOD_DAYS')
+# Период хранения данных в БД в днях, по умолчанию - текущий день
+PERIOD_DAYS = env.int('PERIOD_DAYS', default=0)
 
 RECORDS_PER_PAGE = env.int('RECORDS_PER_PAGE')
 

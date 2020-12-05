@@ -17,3 +17,11 @@ class GameEntry(NamedTuple):
     id_store: int
     store: str
     icon_link: Optional[str]
+
+
+class ReviewEntry(NamedTuple):
+    """Комментарий к игре"""
+    content: str
+    author: str
+    pub_date: datetime
+    stars: float

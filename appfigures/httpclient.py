@@ -8,7 +8,7 @@ from json.decoder import JSONDecodeError
 
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError
 
-from settings import USERNAME, APP_KEY, PASSWORD, BASE_URL, RECORDS_PER_PAGE
+from settings import USERNAME, APP_KEY, PASSWORD, BASE_URL
 
 
 def _get_response(url: str, querystring_params: dict) -> requests.Response:
@@ -64,21 +64,3 @@ def get_deserialize_response_data(url: str, **querystring_params) -> dict:
         response_json = None
 
     return response_json
-
-
-def get_response_content_with_pagination(url: str) -> Generator:
-    """
-    Формирует генератор объектов поиска постранично
-    :param url:
-    :return:
-    """
-    this_page = pages = 1
-    while this_page <= pages:
-        data = get_deserialize_response_data(
-            url,
-            page=this_page,
-            count=RECORDS_PER_PAGE
-            )
-        yield data.get('reviews')
-        pages = data.get('pages')
-        this_page += 1
