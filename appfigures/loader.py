@@ -46,7 +46,7 @@ def get_reviews_info(app_id_in_appfigure: int) -> Generator:
     yield from map(lambda r: ReviewEntry(content=r.get("review"),
                                         author=r.get("author"),
                                         pub_date=str_to_date(r.get("date")),
-                                        stars=float(r.get("stars"))
+                                        stars=Decimal(r.get("stars"))
                                         ),
                    get_reviews_for_current_game(app_id_in_appfigure))
 

@@ -13,8 +13,7 @@ def delete_old_entries():
     session = Session()
     all_games = session.query(Game).all()
     for game in all_games:
-        print(game)
-    session.delete(all_games)
+        session.delete(game)
     session.commit()
     session.close()
 
