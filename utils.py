@@ -20,3 +20,8 @@ def date_to_str(value: datetime) -> str:
     :return:
     """
     return datetime.isoformat(value)
+
+
+def is_common_elements_exist(l1: list, l2: list) -> bool:
+    return bool(set(l1) & set(l2))
+

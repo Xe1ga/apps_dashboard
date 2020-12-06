@@ -4,8 +4,8 @@
 from decimal import Decimal
 from typing import Generator
 
-from utils import str_to_date
-from settings import GAMES, PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, PERIOD_DAYS, RECORDS_PER_PAGE
+from utils import str_to_date, is_common_elements_exist
+from settings import GAMES, PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, PERIOD_DAYS, RECORDS_PER_PAGE, PREDICTED_LANGUAGES
 from appfigures.structure import GameEntry, ReviewEntry
 from appfigures.httpclient import get_deserialize_response_data
 
@@ -44,11 +44,12 @@ def get_reviews_info(app_id_in_appfigure: int) -> Generator:
     :return:
     """
     yield from map(lambda r: ReviewEntry(content=r.get("review"),
-                                        author=r.get("author"),
-                                        pub_date=str_to_date(r.get("date")),
-                                        stars=Decimal(r.get("stars"))
-                                        ),
-                   get_reviews_for_current_game(app_id_in_appfigure))
+                                         author=r.get("author"),
+                                         pub_date=str_to_date(r.get("date")),
+                                         stars=Decimal(r.get("stars"))
+                                         ),
+                   filter_by_language(get_reviews_for_current_game(app_id_in_appfigure))
+                   if PREDICTED_LANGUAGES else get_reviews_for_current_game(app_id_in_appfigure))
 
 
 def get_reviews_for_current_game(app_id_in_appfigure: int) -> Generator:
@@ -70,3 +71,12 @@ def get_reviews_for_current_game(app_id_in_appfigure: int) -> Generator:
         yield from data.get('reviews')
         pages = data.get('pages')
         this_page += 1
+
+
+def filter_by_language(reviews: Generator) -> Generator:
+    """
+    Возвращает отфильтрованные по языку комментарии
+    :param reviews:
+    :return:
+    """
+    yield from filter(lambda r: is_common_elements_exist(r.get("predicted_langs"), PREDICTED_LANGUAGES), reviews)

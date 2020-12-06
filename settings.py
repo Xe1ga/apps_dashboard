@@ -29,8 +29,7 @@ DB_PASSWORD = env.str('DB_PASSWORD')
 
 # Настройки проекта
 
-GAMES = env.dict('GAMES')
-
+GAMES = env('GAMES', cast=dict, subcast=str)
 
 # Период хранения данных в БД в днях, по умолчанию - текущий день
 PERIOD_DAYS = env.int('PERIOD_DAYS', default=0)
@@ -42,3 +41,6 @@ PRODUCTS_ENDPOINT = env.str('PRODUCTS_ENDPOINT')
 REVIEWS_ENDPOINT = env.str('REVIEWS_ENDPOINT')
 
 OVERWRITE_TABLES = env.bool('OVERWRITE_TABLES', default=True)
+
+# Язык, на котором написан отзыв. Пример значения "en,ru", если переменная среды не определена ищем на всех языках.
+PREDICTED_LANGUAGES = env('PREDICTED_LANGUAGES', cast=list, subcast=str, default=None)
