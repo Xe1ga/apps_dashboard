@@ -43,7 +43,8 @@ def get_reviews_info(app_id_in_appfigure: int) -> Generator:
     :param app_id_in_appfigure:
     :return:
     """
-    yield from map(lambda r: ReviewEntry(content=r.get("review"),
+    yield from map(lambda r: ReviewEntry(id_in_appfigure=r.get("id"),
+                                         content=r.get("review"),
                                          author=r.get("author"),
                                          pub_date=str_to_date(r.get("date")),
                                          stars=Decimal(r.get("stars"))
@@ -80,3 +81,20 @@ def filter_by_language(reviews: Generator) -> Generator:
     :return:
     """
     yield from filter(lambda r: is_common_elements_exist(r.get("predicted_langs"), PREDICTED_LANGUAGES), reviews)
+
+
+def get_one_game_info(store: str, app_id_in_store: str) -> GameEntry:
+    """
+    Получить информацию по конкретной игре
+    :param store:
+    :param app_id_in_store:
+    :return:
+    """
+    g = get_deserialize_response_data(PRODUCTS_ENDPOINT + f"{store}/{app_id_in_store}")
+    return GameEntry(app_id_in_appfigure=g.get("id"),
+                     app_id_in_store=g.get("vendor_identifier"),
+                     game_name=g.get("name"),
+                     id_store=g.get("store_id"),
+                     store=g.get("store"),
+                     icon_link=g.get("icon")
+                     )

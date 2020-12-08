@@ -23,5 +23,20 @@ def date_to_str(value: datetime) -> str:
 
 
 def is_common_elements_exist(l1: list, l2: list) -> bool:
+    """
+    Вернуть True, если списки имеют общие элементы и False, если не имеют
+    :param l1:
+    :param l2:
+    :return:
+    """
     return bool(set(l1) & set(l2))
+
+
+def get_values_list_from_dict(d: dict) -> list:
+    """
+    Получить список значений словаря, для случая когда values - строки с разделителями |
+    :param d:
+    :return:
+    """
+    return "|".join(list(d.values())).split("|")
 

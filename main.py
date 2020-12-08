@@ -2,17 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from settings import OVERWRITE_TABLES
-from base.queries import update_game_table, delete_old_entries, update_review_table
-
-
-def start_overwriting_tables():
-    delete_old_entries()
-    update_game_table()
-    update_review_table()
-
-
-def start_updating_tables():
-    pass
+from collector.overwriter import start_overwriting_tables
+from collector.updater import start_updating_tables
 
 
 def run():

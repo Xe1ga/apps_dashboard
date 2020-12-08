@@ -3,6 +3,7 @@
 
 from envparse import env
 
+
 # Подключение к API
 USERNAME = env.str('USERNAME_AF')
 
@@ -29,6 +30,7 @@ DB_PASSWORD = env.str('DB_PASSWORD')
 
 # Настройки проекта
 
+# Словарь ключ-имя магазина, значения - строки, коды игр в данном магазине с разделителем "|"
 GAMES = env('GAMES', cast=dict, subcast=str)
 
 # Период хранения данных в БД в днях, по умолчанию - текущий день

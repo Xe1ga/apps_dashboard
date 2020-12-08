@@ -11,6 +11,7 @@ class Review(Base):
     __tablename__ = 'review'
 
     id = Column(BigInteger, primary_key=True)
+    id_in_appfigure = Column(String(100), nullable=False)
     content = Column(Text)
     author = Column(String(100), nullable=False)
     pub_date = Column(DateTime, nullable=False)
