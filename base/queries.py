@@ -1,18 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import and_, func
-from typing import Union, Generator
+from sqlalchemy import func
 
-from utils import get_values_list_from_dict
-from settings import GAMES
+from utils import get_values_list_from_dict, date_to_str_without_time
+from settings import GAMES, PERIOD_DAYS
 from appfigures.structure import get_game_entry_structure, GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info, get_games_info
-from base.connect import engine, Base, Session
+from base.connect import Session
 from base.models import Game, Review
-
-
-Base.metadata.create_all(engine)
 
 
 def delete_all_games():
@@ -77,7 +73,7 @@ def select_game(store: str, app_id_in_store: str, session: Session):
     :param session:
     :return:
     """
-    game = session.query(Game).filter(and_(Game.app_id_in_store == app_id_in_store, Game.store == store)).first()
+    game = session.query(Game).filter(Game.app_id_in_store == app_id_in_store, Game.store == store).first()
     return game
 
 
@@ -88,12 +84,8 @@ def update_game(game_info_from_app: GameEntry, game_info_from_base: Game):
     :param game_info_from_base:
     :return:
     """
-    game_info_from_base.app_id_in_store = game_info_from_app.app_id_in_store
-    game_info_from_base.app_id_in_appfigure = game_info_from_app.app_id_in_appfigure
-    game_info_from_base.game_name = game_info_from_app.game_name
-    game_info_from_base.id_store = game_info_from_app.id_store
-    game_info_from_base.store = game_info_from_app.store
-    game_info_from_base.icon_link = game_info_from_app.icon_link
+    for field in game_info_from_app._fields:
+        setattr(game_info_from_base, field, getattr(game_info_from_app, field))
 
 
 def add_game_entry(game_entry: GameEntry, session: Session):
@@ -111,6 +103,20 @@ def add_game_entry(game_entry: GameEntry, session: Session):
                 icon_link=game_entry.icon_link
                 )
     session.add(game)
+
+
+def get_last_date_entry(id: str, session: Session) -> str:
+    """
+    Возвращает дату последнего комментария об игре
+    :param game_id:
+    :return:
+    """
+    last_date = session.query(func.max(Review.pub_date)). \
+        filter(Review.game_id == id).group_by(Review.game_id).first()
+    if last_date:
+        return date_to_str_without_time(last_date[0])
+    else:
+        return PERIOD_DAYS
 
 
 def to_analyze_game_table():
@@ -134,15 +140,15 @@ def to_analyze_review_table():
     session = Session()
     all_games = session.query(Game).all()
     for game in all_games:
-        last_date = session.query(func.max(Review.pub_date)).filter(Review.game_id == game.id).group_by(Review.game_id)
-        print(last_date)
-        # reviews = [Review(content=review_entry.content,
-        #                   author=review_entry.author,
-        #                   pub_date=review_entry.pub_date,
-        #                   stars=review_entry.stars
-        #                   )
-        #            for review_entry in get_reviews_info(game.app_id_in_appfigure)]
-        # game.reviews = reviews
-        # session.add(game)
+        last_date = get_last_date_entry(game.id, session)
+        reviews = [Review(id_in_appfigure=review_entry.id_in_appfigure,
+                          content=review_entry.content,
+                          author=review_entry.author,
+                          pub_date=review_entry.pub_date,
+                          stars=review_entry.stars
+                          )
+                   for review_entry in get_reviews_info(game.app_id_in_appfigure, last_date)]
+        game.reviews = reviews
+        session.add(game)
     session.commit()
     session.close()

@@ -22,6 +22,15 @@ def date_to_str(value: datetime) -> str:
     return datetime.isoformat(value)
 
 
+def date_to_str_without_time(value: datetime) -> str:
+    """
+    Конвертирует datetime в строку  формата YYYY-MM-DD
+    :param value:
+    :return:
+    """
+    return value.strftime("%Y-%m-%d")
+
+
 def is_common_elements_exist(l1: list, l2: list) -> bool:
     """
     Вернуть True, если списки имеют общие элементы и False, если не имеют

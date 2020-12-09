@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from decimal import Decimal
-from typing import Generator
+from typing import Generator, Optional
+from datetime import datetime
 
 from utils import str_to_date, is_common_elements_exist
 from settings import GAMES, PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, PERIOD_DAYS, RECORDS_PER_PAGE, PREDICTED_LANGUAGES
@@ -37,10 +38,11 @@ def get_games_info_in_current_store(store: str, apps_id: str) -> Generator:
         yield get_deserialize_response_data(PRODUCTS_ENDPOINT + f"{store}/{app_id_in_store}")
 
 
-def get_reviews_info(app_id_in_appfigure: int) -> Generator:
+def get_reviews_info(app_id_in_appfigure: int, start: Optional[str] = -PERIOD_DAYS) -> Generator:
     """
     Получить информацию о комментариях к игре
     :param app_id_in_appfigure:
+    :param start:
     :return:
     """
     yield from map(lambda r: ReviewEntry(id_in_appfigure=r.get("id"),
@@ -49,14 +51,15 @@ def get_reviews_info(app_id_in_appfigure: int) -> Generator:
                                          pub_date=str_to_date(r.get("date")),
                                          stars=Decimal(r.get("stars"))
                                          ),
-                   filter_by_language(get_reviews_for_current_game(app_id_in_appfigure))
-                   if PREDICTED_LANGUAGES else get_reviews_for_current_game(app_id_in_appfigure))
+                   filter_by_language(get_reviews_for_current_game(app_id_in_appfigure, start))
+                   if PREDICTED_LANGUAGES else get_reviews_for_current_game(app_id_in_appfigure, start))
 
 
-def get_reviews_for_current_game(app_id_in_appfigure: int) -> Generator:
+def get_reviews_for_current_game(app_id_in_appfigure: int, start: Optional[str] = -PERIOD_DAYS) -> Generator:
     """
     Получить комментарии с appfigure по id игры
     :param app_id_in_appfigure:
+    :param start:
     :return:
     """
     url = REVIEWS_ENDPOINT + str(app_id_in_appfigure)
@@ -66,7 +69,7 @@ def get_reviews_for_current_game(app_id_in_appfigure: int) -> Generator:
             url,
             page=this_page,
             count=RECORDS_PER_PAGE,
-            start=-PERIOD_DAYS
+            start=start
         )
         print(data.get('reviews'))
         yield from data.get('reviews')

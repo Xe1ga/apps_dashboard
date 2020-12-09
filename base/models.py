@@ -4,14 +4,17 @@
 from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime, BigInteger, Numeric
 from sqlalchemy.orm import relationship
 
-from base.connect import Base
+from base.connect import engine, Base
+
+
+Base.metadata.create_all(engine)
 
 
 class Review(Base):
     __tablename__ = 'review'
 
     id = Column(BigInteger, primary_key=True)
-    id_in_appfigure = Column(String(100), nullable=False)
+    id_in_appfigure = Column(String(100), nullable=False, unique=True)
     content = Column(Text)
     author = Column(String(100), nullable=False)
     pub_date = Column(DateTime, nullable=False)
