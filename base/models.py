@@ -4,10 +4,7 @@
 from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime, BigInteger, Numeric
 from sqlalchemy.orm import relationship
 
-from base.connect import engine, Base
-
-
-Base.metadata.create_all(engine)
+from base.connect import Base
 
 
 class Review(Base):

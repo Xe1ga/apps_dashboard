@@ -5,8 +5,8 @@ from decimal import Decimal
 from typing import Generator, Optional
 from datetime import datetime
 
-from utils import str_to_date, is_common_elements_exist
-from settings import GAMES, PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, PERIOD_DAYS, RECORDS_PER_PAGE, PREDICTED_LANGUAGES
+from utils import str_to_date, is_common_elements_exist, date_to_str_without_time
+from settings import GAMES, PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, START_DATE, RECORDS_PER_PAGE, PREDICTED_LANGUAGES
 from appfigures.structure import GameEntry, ReviewEntry
 from appfigures.httpclient import get_deserialize_response_data
 
@@ -38,7 +38,7 @@ def get_games_info_in_current_store(store: str, apps_id: str) -> Generator:
         yield get_deserialize_response_data(PRODUCTS_ENDPOINT + f"{store}/{app_id_in_store}")
 
 
-def get_reviews_info(app_id_in_appfigure: int, start: Optional[str] = -PERIOD_DAYS) -> Generator:
+def get_reviews_info(app_id_in_appfigure: int, start: Optional[datetime] = START_DATE) -> Generator:
     """
     Получить информацию о комментариях к игре
     :param app_id_in_appfigure:
@@ -55,13 +55,14 @@ def get_reviews_info(app_id_in_appfigure: int, start: Optional[str] = -PERIOD_DA
                    if PREDICTED_LANGUAGES else get_reviews_for_current_game(app_id_in_appfigure, start))
 
 
-def get_reviews_for_current_game(app_id_in_appfigure: int, start: Optional[str] = -PERIOD_DAYS) -> Generator:
+def get_reviews_for_current_game(app_id_in_appfigure: int, start: Optional[datetime] = START_DATE) -> Generator:
     """
     Получить комментарии с appfigure по id игры
     :param app_id_in_appfigure:
     :param start:
     :return:
     """
+    start_date = date_to_str_without_time(start)
     url = REVIEWS_ENDPOINT + str(app_id_in_appfigure)
     this_page = pages = 1
     while this_page <= pages:
@@ -69,9 +70,8 @@ def get_reviews_for_current_game(app_id_in_appfigure: int, start: Optional[str] 
             url,
             page=this_page,
             count=RECORDS_PER_PAGE,
-            start=start
+            start=start_date
         )
-        print(data.get('reviews'))
         yield from data.get('reviews')
         pages = data.get('pages')
         this_page += 1

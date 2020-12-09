@@ -3,6 +3,8 @@
 
 from envparse import env
 
+from utils import calc_past_date
+
 
 # Подключение к API
 USERNAME = env.str('USERNAME_AF')
@@ -35,6 +37,8 @@ GAMES = env('GAMES', cast=dict, subcast=str)
 
 # Период хранения данных в БД в днях, по умолчанию - текущий день
 PERIOD_DAYS = env.int('PERIOD_DAYS', default=0)
+
+START_DATE = calc_past_date(PERIOD_DAYS)
 
 RECORDS_PER_PAGE = env.int('RECORDS_PER_PAGE')
 
