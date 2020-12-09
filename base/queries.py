@@ -107,8 +107,9 @@ def add_game_entry(game_entry: GameEntry, session: Session):
 
 def get_last_date_entry(id: str, session: Session) -> str:
     """
-    Возвращает дату последнего комментария об игре
-    :param game_id:
+    Возвращает дату, с которой будет начинаться поиск комментариев
+    :param id:
+    :param session:
     :return:
     """
     last_date = session.query(func.max(Review.pub_date)). \

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def str_to_date(value: str) -> datetime:
@@ -49,3 +49,12 @@ def get_values_list_from_dict(d: dict) -> list:
     """
     return "|".join(list(d.values())).split("|")
 
+
+def calc_past_date(value: int) -> datetime:
+    """
+    Вычислить дату в прошлом, за value дней до текущей даты
+    :param value:
+    :return:
+    """
+    past_date = datetime.now() - timedelta(days=value)
+    return past_date
