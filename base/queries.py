@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from sqlalchemy import func
+from sqlalchemy.exc import SQLAlchemyError
 
 from datetime import datetime
 from typing import Optional, Any, Iterator
@@ -11,6 +12,7 @@ from utils import get_values_list_from_dict, get_max_time_in_date
 from settings import GAMES, START_DATE
 from appfigures.structure import get_game_entry_structure, GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info, get_games_info
+from appfigures.exceptions import DBError
 from base.connect import engine, Base, Session
 from base.models import Game, Review
 
@@ -29,6 +31,9 @@ def create_session(**kwargs: Any) -> Iterator[Session]:
     try:
         yield new_session
         new_session.commit()
+    except SQLAlchemyError as err:
+        new_session.rollback()
+        raise DBError(f'При выполнении операций с базой данных возникла ошибка. {err}')
     except Exception:
         new_session.rollback()
         raise
@@ -153,4 +158,5 @@ def to_analyze_game_table():
 def delete_old_reviews():
     """Удалить все комментарии меньше START_DATE, включая START_DATE"""
     with create_session() as session:
-        session.query(Review).filter(Review.pub_date <= get_max_time_in_date(START_DATE)).delete(synchronize_session=False)
+        session.query(Review).filter(Review.pub_date
+                                     <= get_max_time_in_date(START_DATE)).delete(synchronize_session=False)

@@ -33,3 +33,10 @@ class HTTPError(Error):
     Исключение, возникающее при HTTP ошибках
     """
     pass
+
+
+class DBError(Error):
+    """
+    Исключение, возникающее при работе с БД
+    """
+    pass

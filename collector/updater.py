@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from datetime import datetime
 
 from base.queries import delete_untracked_games, to_analyze_game_table, add_reviews, delete_old_reviews
 
