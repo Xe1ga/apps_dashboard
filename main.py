@@ -11,7 +11,7 @@ from collector.updater import start_updating_tables
 
 def setup_logger():
     logger = logging.getLogger("apps_dashboard")
-
+    logger.setLevel(logging.INFO)
     formatter = logging.Formatter(
         '%(asctime)s:%(name)s:%(lineno)d:%(levelname)s:%(message)s')
 
