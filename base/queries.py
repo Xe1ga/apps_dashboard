@@ -4,10 +4,11 @@
 from sqlalchemy import func
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Any, Iterator
+from contextlib import contextmanager
 
-from utils import get_values_list_from_dict, date_to_str_without_time
-from settings import GAMES, PERIOD_DAYS, START_DATE
+from utils import get_values_list_from_dict
+from settings import GAMES, START_DATE
 from appfigures.structure import get_game_entry_structure, GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info, get_games_info
 from base.connect import engine, Base, Session
@@ -15,6 +16,24 @@ from base.models import Game, Review
 
 
 Base.metadata.create_all(engine)
+
+
+@contextmanager
+def create_session(**kwargs: Any) -> Iterator[Session]:
+    """
+    Контекстный менеждер сессии
+    :param kwargs:
+    :return:
+    """
+    new_session = Session(**kwargs)
+    try:
+        yield new_session
+        new_session.commit()
+    except Exception:
+        new_session.rollback()
+        raise
+    finally:
+        new_session.close()
 
 
 def delete_all_games():

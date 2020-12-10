@@ -3,7 +3,6 @@
 
 import requests
 
-from typing import Generator
 from json.decoder import JSONDecodeError
 
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError
