@@ -3,7 +3,7 @@
 
 from envparse import env
 
-from utils import calc_past_date
+from utils import calc_past_date, get_min_time_in_date
 
 
 # Подключение к API
@@ -35,10 +35,13 @@ DB_PASSWORD = env.str('DB_PASSWORD')
 # Словарь ключ-имя магазина, значения - строки, коды игр в данном магазине с разделителем "|"
 GAMES = env('GAMES', cast=dict, subcast=str)
 
+# Пересоздать схему БД заново перед выполнением скрипта (удалить и создать таблицы)
+RECREATE_DB_SCHEMA = env.bool('RECREATE_DB_SCHEMA', default=False)
+
 # Период хранения данных в БД в днях, по умолчанию - текущий день
 PERIOD_DAYS = env.int('PERIOD_DAYS', default=0)
 
-START_DATE = calc_past_date(PERIOD_DAYS)
+START_DATE = get_min_time_in_date(calc_past_date(PERIOD_DAYS))
 
 RECORDS_PER_PAGE = env.int('RECORDS_PER_PAGE')
 
