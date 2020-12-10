@@ -154,13 +154,3 @@ def delete_old_reviews():
     """Удалить все комментарии меньше START_DATE, включая START_DATE"""
     with create_session() as session:
         session.query(Review).filter(Review.pub_date <= get_max_time_in_date(START_DATE)).delete(synchronize_session=False)
-
-
-def delete_reviews_on_period(start: datetime):
-    """
-    Удаление комментариев позднее указанной даты
-    :param start:
-    :return:
-    """
-    with create_session() as session:
-        session.query(Review).filter(Review.pub_date >= start).delete(synchronize_session=False)
