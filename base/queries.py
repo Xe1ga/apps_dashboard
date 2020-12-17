@@ -12,6 +12,7 @@ from utils import get_values_list_from_dict, get_max_time_in_date
 from settings import GAMES, START_DATE
 from appfigures.structure import get_game_entry_structure, GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info, get_games_info
+from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
 from appfigures.exceptions import DBError
 from base.connect import engine, Base, Session
 from base.models import Game, Review
@@ -34,7 +35,7 @@ def create_session(**kwargs: Any) -> Iterator[Session]:
     except SQLAlchemyError as err:
         new_session.rollback()
         raise DBError(f'При выполнении операций с базой данных возникла ошибка. {err}')
-    except Exception:
+    except (TimeoutConnectionError, ConnectError, HTTPError):
         new_session.rollback()
         raise
     finally:
@@ -44,7 +45,8 @@ def create_session(**kwargs: Any) -> Iterator[Session]:
 def delete_all_games():
     """Очистка таблицы игр"""
     with create_session() as session:
-        session.query(Game).all().delete(synchronize_session=False)
+        for game in session.query(Game).all():
+            session.delete(game)
 
 
 def recreate_database_schema():
@@ -155,8 +157,8 @@ def to_analyze_game_table():
                             setattr(game_info_from_base, field, getattr(game_info_from_app, field))
 
 
-def delete_old_reviews():
-    """Удалить все комментарии меньше START_DATE, включая START_DATE"""
+def delete_old_reviews(start: datetime):
+    """Удалить все комментарии меньше start даты, включая start"""
     with create_session() as session:
         session.query(Review).filter(Review.pub_date
-                                     <= get_max_time_in_date(START_DATE)).delete(synchronize_session=False)
+                                     <= get_max_time_in_date(start)).delete(synchronize_session=False)

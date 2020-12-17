@@ -13,7 +13,7 @@ def setup_logger():
     logger = logging.getLogger("apps_dashboard")
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter(
-        '%(asctime)s:%(name)s:%(lineno)d:%(levelname)s:%(message)s')
+        '%(asctime)s:%(name)s:%(filename)s:%(lineno)d:%(levelname)s:%(message)s')
 
     stream_handler = logging.StreamHandler()
     file_handler = logging.FileHandler('log/apps_dashboard.log')
@@ -37,7 +37,7 @@ def run():
     logger.info("Скрипт запущен")
     try:
         start_overwriting_tables() if OVERWRITE_TABLES else start_updating_tables()
-    except Exception as err:
+    except (TimeoutConnectionError, ConnectError, HTTPError, DBError) as err:
         logger.error(f'Во время работы скрипта произошла ошибка: {err}')
 
     logger.info("Скрипт завершил работу")
