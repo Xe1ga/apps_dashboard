@@ -6,44 +6,46 @@ services:
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=s3,lambda,cloudformation,cloudwatch,sts,iam,dynamodb
+      - SERVICES=s3
       - LAMBDA_EXECUTOR=docker
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - HOST_TMP_FOLDER=${TMPDIR}
     volumes:
+      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
 
-  postgres:
-    image: postgres:9.6.20
-    container_name: postgres9
-    restart: always
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./pg_data:/var/lib/postgresql/data
-    env_file: .env
-    environment:
-      - DB_ENGINE=${DB_ENGINE}
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-
-  apps_dashboard:
-    build: .
-    depends_on:
-      - postgres
-    env_file: .env
-    environment:
-      - USERNAME_AF=${USERNAME_AF}
-      - PASSWORD=${PASSWORD}
-      - APP_KEY=${APP_KEY}
-      - BASE_URL=${BASE_URL}
-      - RECREATE_DB_SCHEMA=${RECREATE_DB_SCHEMA}
-      - PERIOD_DAYS=${PERIOD_DAYS}
-      - RECORDS_PER_PAGE=${RECORDS_PER_PAGE}
-      - GAMES=${GAMES}
-      - PRODUCTS_ENDPOINT=${PRODUCTS_ENDPOINT}
-      - REVIEWS_ENDPOINT=${REVIEWS_ENDPOINT}
-      - OVERWRITE_TABLES=${OVERWRITE_TABLES}
-      - LANG=${LANG}
+#  postgres:
+#    image: postgres:9.6.20
+#    container_name: postgres9
+#    restart: always
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - ./pg_data:/var/lib/postgresql/data
+#    env_file: .env
+#    environment:
+#      - DB_ENGINE=${DB_ENGINE}
+#      - DB_HOST=${DB_HOST}
+#      - DB_NAME=${DB_NAME}
+#      - DB_PORT=${DB_PORT}
+#      - DB_USER=${DB_USER}
+#      - DB_PASSWORD=${DB_PASSWORD}
+#
+#  apps_dashboard:
+#    build: .
+#    depends_on:
+#      - postgres
+#    env_file: .env
+#    environment:
+#      - USERNAME_AF=${USERNAME_AF}
+#      - PASSWORD=${PASSWORD}
+#      - APP_KEY=${APP_KEY}
+#      - BASE_URL=${BASE_URL}
+#      - RECREATE_DB_SCHEMA=${RECREATE_DB_SCHEMA}
+#      - PERIOD_DAYS=${PERIOD_DAYS}
+#      - RECORDS_PER_PAGE=${RECORDS_PER_PAGE}
+#      - GAMES=${GAMES}
+#      - PRODUCTS_ENDPOINT=${PRODUCTS_ENDPOINT}
+#      - REVIEWS_ENDPOINT=${REVIEWS_ENDPOINT}
+#      - OVERWRITE_TABLES=${OVERWRITE_TABLES}
+#      - LANG=${LANG}

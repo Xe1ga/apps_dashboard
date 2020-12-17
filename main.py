@@ -5,6 +5,8 @@ import logging
 
 from settings import OVERWRITE_TABLES
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
+from aws.exceptions import S3ClientError
+from aws.s3client import create_bucket
 from collector.overwriter import start_overwriting_tables
 from collector.updater import start_updating_tables
 
@@ -37,7 +39,7 @@ def run():
     logger.info("Скрипт запущен")
     try:
         start_overwriting_tables() if OVERWRITE_TABLES else start_updating_tables()
-    except (TimeoutConnectionError, ConnectError, HTTPError, DBError) as err:
+    except (TimeoutConnectionError, ConnectError, HTTPError, DBError, S3ClientError) as err:
         logger.error(f'Во время работы скрипта произошла ошибка: {err}')
 
     logger.info("Скрипт завершил работу")

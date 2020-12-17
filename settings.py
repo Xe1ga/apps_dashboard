@@ -53,3 +53,5 @@ OVERWRITE_TABLES = env.bool('OVERWRITE_TABLES', default=True)
 
 # Язык, на котором написан отзыв. Пример значения "en,ru", если переменная среды не определена ищем на всех языках.
 PREDICTED_LANGUAGES = env('PREDICTED_LANGUAGES', cast=list, subcast=str, default=None)
+# endpoint корзины s3
+LOCALSTACK_S3_ENDPOINT_URL = env.str('LOCALSTACK_S3_ENDPOINT_URL')
