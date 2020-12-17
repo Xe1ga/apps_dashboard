@@ -128,7 +128,7 @@ def add_game_entry(game_entry: GameEntry, session: Session):
     session.add(game)
 
 
-def get_last_date_entry(game_id: str, session: Session) -> datetime:
+def get_first_date_entry(game_id: str, session: Session) -> datetime:
     """
     Возвращает дату, с которой будет начинаться поиск комментариев
     :param game_id:
