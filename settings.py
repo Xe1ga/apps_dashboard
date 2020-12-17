@@ -55,3 +55,9 @@ OVERWRITE_TABLES = env.bool('OVERWRITE_TABLES', default=True)
 PREDICTED_LANGUAGES = env('PREDICTED_LANGUAGES', cast=list, subcast=str, default=None)
 # endpoint корзины s3
 LOCALSTACK_S3_ENDPOINT_URL = env.str('LOCALSTACK_S3_ENDPOINT_URL')
+
+AWS_ACCESS_KEY_ID = env.str('AWS_ACCESS_KEY_ID')
+
+AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY')
+
+REGION = env.str('REGION')

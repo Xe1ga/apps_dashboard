@@ -6,7 +6,7 @@ import boto3
 
 from botocore.exceptions import ClientError
 
-from settings import LOCALSTACK_S3_ENDPOINT_URL
+from settings import LOCALSTACK_S3_ENDPOINT_URL, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, REGION
 from aws.exceptions import S3ClientError
 
 
@@ -14,6 +14,8 @@ def get_client():
     if LOCALSTACK_S3_ENDPOINT_URL:
         client_config = {
             'service_name': 's3',
+            'aws_access_key_id': AWS_ACCESS_KEY_ID,
+            'aws_secret_access_key': AWS_SECRET_ACCESS_KEY,
             'endpoint_url': LOCALSTACK_S3_ENDPOINT_URL
         }
     else:
@@ -29,10 +31,16 @@ def create_bucket(bucket_name):
     :param bucket_name:
     :return:
     """
+    client_config = get_client()
     try:
-        client_config = get_client()
-        s3_client = boto3.client(**client_config)
-        s3_client.create_bucket(Bucket=bucket_name)
+        if REGION is None:
+            s3_client = boto3.client(**client_config)
+            s3_client.create_bucket(Bucket=bucket_name)
+        else:
+            s3_client = boto3.client(**client_config, region_name=REGION)
+            location = {'LocationConstraint': REGION}
+            s3_client.create_bucket(Bucket=bucket_name,
+                                    CreateBucketConfiguration=location)
     except ClientError as err:
         raise S3ClientError(f'При создании s3 bucket возникла ошибка. {err}')
         return False
@@ -45,8 +53,9 @@ def is_exist_bucket(name_bucket: str) -> bool:
     :param name_bucket:
     :return:
     """
-    s3 = boto3.client('s3')
-    response = s3.list_buckets()
+    client_config = get_client()
+    s3_client = boto3.client(**client_config)
+    response = s3_client.list_buckets()
     buckets = [bucket["Name"] for bucket in response['Buckets']]
     return name_bucket in buckets
 
