@@ -47,24 +47,5 @@ def run():
     logger.info("Скрипт завершил работу")
 
 
-
-    # import requests
-    #
-    # URL = 'https://play-lh.googleusercontent.com/83UIBGDsUeiJDR0bZPxT4xai5iqKXj6-3V6Snrqq3suXDSapL93Vf_fP6tJL5qEjEoM7=s180-rw'
-    # filename = 'game1'
-    # r = requests.get(URL, stream=True)
-    # # upload_fileobj(io.BytesIO(r.content), "game-icons", filename + "." + r.headers.get('Content-Type').split("/")[1])
-    # upload_fileobj(r.raw, filename + "." + r.headers.get('Content-Type').split("/")[1])
-    #
-    #
-    #
-    # # with open(filename + "." + r.headers.get('Content-Type').split("/")[1], 'wb') as fd:
-    # #     upload_fileobj(r.content, "game-logo", filename + "." + r.headers.get('Content-Type').split("/")[1])
-    #     # for chunk in r.iter_content(chunk_size=10000):
-    #     #     fd.write(chunk)
-    #
-    # download_file("game1.webp", "gamenew1.webp")
-
-
 if __name__ == "__main__":
     run()
