@@ -3,8 +3,6 @@
 
 from envparse import env
 
-from utils import get_min_time_in_date, str_to_date
-
 
 # Подключение к API
 USERNAME = env.str('USERNAME_AF')
@@ -38,15 +36,11 @@ GAMES = env('GAMES', cast=dict, subcast=str)
 # Пересоздать схему БД заново перед выполнением скрипта (удалить и создать таблицы)
 RECREATE_DB_SCHEMA = env.bool('RECREATE_DB_SCHEMA', default=False)
 
-START_DATE = get_min_time_in_date(str_to_date(env.int('START_DATE', default=None)))
-
 RECORDS_PER_PAGE = env.int('RECORDS_PER_PAGE')
 
 PRODUCTS_ENDPOINT = env.str('PRODUCTS_ENDPOINT')
 
 REVIEWS_ENDPOINT = env.str('REVIEWS_ENDPOINT')
-
-OVERWRITE_TABLES = env.bool('OVERWRITE_TABLES', default=True)
 
 # Язык, на котором написан отзыв. Пример значения "en,ru", если переменная среды не определена ищем на всех языках.
 PREDICTED_LANGUAGES = env('PREDICTED_LANGUAGES', cast=list, subcast=str, default=None)

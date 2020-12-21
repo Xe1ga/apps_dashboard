@@ -4,14 +4,13 @@
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 
-from datetime import datetime
-from typing import Optional, Any, Iterator
+from typing import Any, Iterator
 from contextlib import contextmanager
 
 from utils import get_values_list_from_dict, date_to_str_without_time
 from settings import GAMES
 from appfigures.structure import get_game_entry_structure, GameEntry
-from appfigures.loader import get_reviews_info, get_one_game_info, get_games_info
+from appfigures.loader import get_reviews_info, get_one_game_info
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
 from base.connect import engine, Base, Session
 from base.models import Game, Review
@@ -41,39 +40,17 @@ def create_session(**kwargs: Any) -> Iterator[Session]:
         new_session.close()
 
 
-def delete_all_games():
-    """Очистка таблицы игр"""
-    with create_session() as session:
-        for game in session.query(Game).all():
-            session.delete(game)
-
-
 def recreate_database_schema():
     """Удаление и создание таблиц БД"""
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
 
 
-def add_games():
-    """Добавляет информацию об играх"""
-    with create_session() as session:
-        all_games = [Game(app_id_in_appfigures=game_entry.app_id_in_appfigures,
-                          app_id_in_store=game_entry.app_id_in_store,
-                          game_name=game_entry.game_name,
-                          id_store=game_entry.id_store,
-                          store=game_entry.store,
-                          icon_link_appfigures=game_entry.icon_link_appfigures,
-                          icon_link_s3=game_entry.icon_link_s3
-                          )
-                     for game_entry in get_games_info()]
-        session.add_all(all_games)
-
-
 def add_reviews():
     """Добавляет комментарии к играм"""
 
     with create_session() as session:
-        all_games = session.query(Game).all()
+        all_games = session.query(Game).filter(Game.active.is_(True)).all()
         for game in all_games:
             reviews = [Review(id_in_appfigures=review_entry.id_in_appfigures,
                               content=review_entry.content,
@@ -87,12 +64,12 @@ def add_reviews():
             session.add(game)
 
 
-def delete_untracked_games():
-    """Удалить из таблицы игр записи об играх, которые не указаны в переменной окружения"""
+def mark_inactive_games():
+    """Отметить значение active = False у тех игр, которые не указаны в переменной окружения как активные"""
     with create_session() as session:
         session.query(Game).filter(
             Game.app_id_in_store.notin_(get_values_list_from_dict(GAMES))
-        ).delete(synchronize_session=False)
+        ).update(active=False, synchronize_session=False)
 
 
 def select_game(store: str, app_id_in_store: str, session: Session):
@@ -109,7 +86,7 @@ def select_game(store: str, app_id_in_store: str, session: Session):
 
 def add_game_entry(game_entry: GameEntry, session: Session):
     """
-    Добавить одну запись об игре
+    Добавить запись об игре
     :param game_entry:
     :param session:
     :return:
@@ -137,8 +114,8 @@ def get_last_date_entry(game_id: str, session: Session) -> str:
     return date_to_str_without_time(last_date) if last_date else None
 
 
-def to_analyze_game_table():
-    """Анализировать таблицу игр, удалив лишние строки, добавив отсутствующие и обновив изменившиеся записи"""
+def update_game_table():
+    """Обновить таблицу игр, удалив лишние строки, добавив отсутствующие и обновив изменившиеся записи"""
     with create_session() as session:
         for store, apps_id in GAMES.items():
             for app_id_in_store in apps_id.split("|"):

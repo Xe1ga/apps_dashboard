@@ -3,10 +3,9 @@
 
 from decimal import Decimal
 from typing import Generator, Optional
-from datetime import datetime
 
-from utils import str_to_date, is_common_elements_exist, date_to_str_without_time
-from settings import GAMES, PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, START_DATE, RECORDS_PER_PAGE, PREDICTED_LANGUAGES
+from utils import str_to_date, is_common_elements_exist
+from settings import PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, RECORDS_PER_PAGE, PREDICTED_LANGUAGES
 from appfigures.structure import GameEntry, ReviewEntry
 from appfigures.httpclient import get_deserialize_response_data
 from aws.s3client import transfer_image_and_return_link
@@ -30,16 +29,6 @@ def get_game_entry(g: dict) -> GameEntry:
                              icon_link=g.get("icon")
                          )
                      )
-
-
-def get_games_info() -> Generator:
-    """
-    Получить информацию об играх из appfigures
-    :return:
-    """
-    for store, apps_id in GAMES.items():
-        yield from map(lambda g: get_game_entry(g),
-                       get_games_info_in_current_store(store, apps_id))
 
 
 def get_games_info_in_current_store(store: str, apps_id: str) -> Generator:
@@ -84,7 +73,7 @@ def get_reviews_for_current_game(app_id_in_appfigures: int, start: Optional[str]
             url,
             page=this_page,
             count=RECORDS_PER_PAGE,
-            start=start_date
+            start=start
         )
         yield from data.get('reviews')
         pages = data.get('pages')
@@ -109,5 +98,3 @@ def get_one_game_info(store: str, app_id_in_store: str) -> GameEntry:
     """
     g = get_deserialize_response_data(PRODUCTS_ENDPOINT + f"{store}/{app_id_in_store}")
     return get_game_entry(g)
-
-

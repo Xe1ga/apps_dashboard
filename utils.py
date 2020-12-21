@@ -58,21 +58,3 @@ def calc_past_date(value: int) -> datetime:
     """
     past_date = datetime.now() - timedelta(days=value)
     return past_date
-
-
-def get_min_time_in_date(value: datetime) -> str:
-    """
-    Возвращает дату с минимальным временем
-    :param value:
-    :return:
-    """
-    return value.combine(value.date(), value.min.time())
-
-
-def get_max_time_in_date(value: datetime) -> str:
-    """
-    Возвращает дату с максимальным временем
-    :param value:
-    :return:
-    """
-    return value.combine(value.date(), value.max.time())

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime, BigInteger, Numeric
+from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, String, Text, DateTime, BigInteger, Numeric, Boolean
 from sqlalchemy.orm import relationship
 
 from base.connect import Base
@@ -35,6 +35,7 @@ class Game(Base):
     store = Column(String(50), nullable=False)
     icon_link_appfigures = Column(String(2048))
     icon_link_s3 = Column(String(2048))
+    active = Column(Boolean, default=1)
 
     reviews = relationship("Review", back_populates="game", order_by="Review.pub_date",
                            cascade="all, delete, delete-orphan", passive_deletes=True)
