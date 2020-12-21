@@ -80,7 +80,7 @@ def upload_fileobj(data: str, object_name: str, bucket: Optional[str] = BUCKET) 
         return ""
 
     endpoint_url = s3_client.meta.endpoint_url.split("/")[2]
-    return f"http://{bucket}/{endpoint_url}/{object_name}"
+    return f"http://{bucket}.{endpoint_url}/{object_name}"
 
 
 def download_file(object_name: str, file_name: str, bucket: Optional[str] = BUCKET):
