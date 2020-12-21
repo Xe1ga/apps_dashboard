@@ -12,24 +12,33 @@ from appfigures.httpclient import get_deserialize_response_data
 from aws.s3client import transfer_image_and_return_link
 
 
+def get_game_entry(g: dict) -> GameEntry:
+    """
+    Возвращает данные об игре в структуре GameEntry
+    :param g: 
+    :return: 
+    """""
+    return GameEntry(app_id_in_appfigures=g.get("id"),
+                     app_id_in_store=g.get("vendor_identifier"),
+                     game_name=g.get("name"),
+                     id_store=g.get("store_id"),
+                     store=g.get("store"),
+                     icon_link_appfigures=g.get("icon"),
+                     icon_link_s3=transfer_image_and_return_link(
+                             app_id_in_appfigures=g.get("id"),
+                             name=g.get("name"),
+                             icon_link=g.get("icon")
+                         )
+                     )
+
+
 def get_games_info() -> Generator:
     """
     Получить информацию об играх из appfigures
     :return:
     """
     for store, apps_id in GAMES.items():
-        yield from map(lambda g: GameEntry(app_id_in_appfigures=g.get("id"),
-                                           app_id_in_store=g.get("vendor_identifier"),
-                                           game_name=g.get("name"),
-                                           id_store=g.get("store_id"),
-                                           store=g.get("store"),
-                                           icon_link_appfigures=g.get("icon"),
-                                           icon_link_s3=transfer_image_and_return_link(
-                                                   app_id_in_appfigures=g.get("id"),
-                                                   name=g.get("name"),
-                                                   icon_link=g.get("icon")
-                                               )
-                                           ),
+        yield from map(lambda g: get_game_entry(g),
                        get_games_info_in_current_store(store, apps_id))
 
 
@@ -100,15 +109,6 @@ def get_one_game_info(store: str, app_id_in_store: str) -> GameEntry:
     :return:
     """
     g = get_deserialize_response_data(PRODUCTS_ENDPOINT + f"{store}/{app_id_in_store}")
-    return GameEntry(app_id_in_appfigures=g.get("id"),
-                     app_id_in_store=g.get("vendor_identifier"),
-                     game_name=g.get("name"),
-                     id_store=g.get("store_id"),
-                     store=g.get("store"),
-                     icon_link_appfigures=g.get("icon"),
-                     icon_link_s3=transfer_image_and_return_link(
-                             app_id_in_appfigures=g.get("id"),
-                             name=g.get("name"),
-                             icon_link=g.get("icon")
-                         )
-                     )
+    return get_game_entry(g)
+
+

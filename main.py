@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import io
+
 import logging
 
 from settings import OVERWRITE_TABLES
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
 from aws.exceptions import S3ClientError
-from aws.s3client import create_bucket, upload_fileobj, download_file, is_exist_bucket
+from aws.s3client import create_bucket, is_exist_bucket
 from collector.overwriter import start_overwriting_tables
 from collector.updater import start_updating_tables
 
