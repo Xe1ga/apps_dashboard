@@ -5,9 +5,9 @@ import requests
 
 from json.decoder import JSONDecodeError
 
-from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError
-
 from settings import USERNAME, APP_KEY, PASSWORD, BASE_URL
+
+from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError
 
 
 def _get_response(url: str, querystring_params: dict) -> requests.Response:
@@ -61,5 +61,19 @@ def get_deserialize_response_data(url: str, **querystring_params) -> dict:
         response_json = response.json()
     except (ValueError, JSONDecodeError):
         response_json = None
-
+    
     return response_json
+
+
+def get_response(url: str) -> requests.Response:
+    """
+    Вернуть ответ запроса с параметром stream=True
+    :param url:
+    :return:
+    """
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as err:
+        raise HTTPError(f"Возникла HTTP ошибка: {err}.")
+    return response

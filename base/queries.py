@@ -13,7 +13,6 @@ from settings import GAMES, START_DATE
 from appfigures.structure import get_game_entry_structure, GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info, get_games_info
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
-from appfigures.exceptions import DBError
 from base.connect import engine, Base, Session
 from base.models import Game, Review
 
@@ -58,12 +57,13 @@ def recreate_database_schema():
 def add_games():
     """Добавляет информацию об играх"""
     with create_session() as session:
-        all_games = [Game(app_id_in_appfigure=game_entry.app_id_in_appfigure,
+        all_games = [Game(app_id_in_appfigures=game_entry.app_id_in_appfigures,
                           app_id_in_store=game_entry.app_id_in_store,
                           game_name=game_entry.game_name,
                           id_store=game_entry.id_store,
                           store=game_entry.store,
-                          icon_link=game_entry.icon_link
+                          icon_link_appfigures=game_entry.icon_link_appfigures,
+                          icon_link_s3=game_entry.icon_link_s3
                           )
                      for game_entry in get_games_info()]
         session.add_all(all_games)
@@ -78,13 +78,13 @@ def add_reviews(all_period: Optional[bool] = True):
     with create_session() as session:
         all_games = session.query(Game).all()
         for game in all_games:
-            reviews = [Review(id_in_appfigure=review_entry.id_in_appfigure,
+            reviews = [Review(id_in_appfigures=review_entry.id_in_appfigures,
                               content=review_entry.content,
                               author=review_entry.author,
                               pub_date=review_entry.pub_date,
                               stars=review_entry.stars
                               )
-                       for review_entry in get_reviews_info(game.app_id_in_appfigure,
+                       for review_entry in get_reviews_info(game.app_id_in_appfigures,
                                                             START_DATE if all_period
                                                             else get_last_date_entry(game.id, session))]
             game.reviews = reviews
@@ -118,17 +118,18 @@ def add_game_entry(game_entry: GameEntry, session: Session):
     :param session:
     :return:
     """
-    game = Game(app_id_in_appfigure=game_entry.app_id_in_appfigure,
+    game = Game(app_id_in_appfigures=game_entry.app_id_in_appfigures,
                 app_id_in_store=game_entry.app_id_in_store,
                 game_name=game_entry.game_name,
                 id_store=game_entry.id_store,
                 store=game_entry.store,
-                icon_link=game_entry.icon_link
+                icon_link_appfigures=game_entry.icon_link_appfigures,
+                icon_link_s3=game_entry.icon_link_s3
                 )
     session.add(game)
 
 
-def get_first_date_entry(game_id: str, session: Session) -> datetime:
+def get_last_date_entry(game_id: str, session: Session) -> datetime:
     """
     Возвращает дату, с которой будет начинаться поиск комментариев
     :param game_id:
