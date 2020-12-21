@@ -8,8 +8,8 @@ from datetime import datetime
 from typing import Optional, Any, Iterator
 from contextlib import contextmanager
 
-from utils import get_values_list_from_dict, get_max_time_in_date
-from settings import GAMES, START_DATE
+from utils import get_values_list_from_dict, date_to_str_without_time
+from settings import GAMES
 from appfigures.structure import get_game_entry_structure, GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info, get_games_info
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
@@ -69,12 +69,9 @@ def add_games():
         session.add_all(all_games)
 
 
-def add_reviews(all_period: Optional[bool] = True):
-    """
-    Добавляет комментарии к играм
-    :param all_period:
-    :return:
-    """
+def add_reviews():
+    """Добавляет комментарии к играм"""
+
     with create_session() as session:
         all_games = session.query(Game).all()
         for game in all_games:
@@ -85,8 +82,7 @@ def add_reviews(all_period: Optional[bool] = True):
                               stars=review_entry.stars
                               )
                        for review_entry in get_reviews_info(game.app_id_in_appfigures,
-                                                            START_DATE if all_period
-                                                            else get_last_date_entry(game.id, session))]
+                                                            get_last_date_entry(game.id, session))]
             game.reviews = reviews
             session.add(game)
 
@@ -129,7 +125,7 @@ def add_game_entry(game_entry: GameEntry, session: Session):
     session.add(game)
 
 
-def get_last_date_entry(game_id: str, session: Session) -> datetime:
+def get_last_date_entry(game_id: str, session: Session) -> str:
     """
     Возвращает дату, с которой будет начинаться поиск комментариев
     :param game_id:
@@ -138,9 +134,7 @@ def get_last_date_entry(game_id: str, session: Session) -> datetime:
     """
     last_date = session.query(func.max(Review.pub_date)). \
         filter(Review.game_id == game_id).group_by(Review.game_id).scalar()
-    if last_date is not None and last_date.date() > START_DATE.date():
-        return last_date
-    return START_DATE
+    return date_to_str_without_time(last_date) if last_date else None
 
 
 def to_analyze_game_table():
@@ -156,10 +150,3 @@ def to_analyze_game_table():
                     if get_game_entry_structure(game_info_from_base) != game_info_from_app:
                         for field in game_info_from_app._fields:
                             setattr(game_info_from_base, field, getattr(game_info_from_app, field))
-
-
-def delete_old_reviews(start: datetime):
-    """Удалить все комментарии меньше start даты, включая start"""
-    with create_session() as session:
-        session.query(Review).filter(Review.pub_date
-                                     <= get_max_time_in_date(start)).delete(synchronize_session=False)

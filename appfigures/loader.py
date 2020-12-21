@@ -53,7 +53,7 @@ def get_games_info_in_current_store(store: str, apps_id: str) -> Generator:
         yield get_deserialize_response_data(PRODUCTS_ENDPOINT + f"{store}/{app_id_in_store}")
 
 
-def get_reviews_info(app_id_in_appfigures: int, start: Optional[datetime] = START_DATE) -> Generator:
+def get_reviews_info(app_id_in_appfigures: int, start: Optional[str]) -> Generator:
     """
     Получить информацию о комментариях к игре
     :param app_id_in_appfigures:
@@ -70,14 +70,13 @@ def get_reviews_info(app_id_in_appfigures: int, start: Optional[datetime] = STAR
                    if PREDICTED_LANGUAGES else get_reviews_for_current_game(app_id_in_appfigures, start))
 
 
-def get_reviews_for_current_game(app_id_in_appfigures: int, start: Optional[datetime] = START_DATE) -> Generator:
+def get_reviews_for_current_game(app_id_in_appfigures: int, start: Optional[str]) -> Generator:
     """
     Получить комментарии с appfigures по id игры
     :param app_id_in_appfigures:
     :param start:
     :return:
     """
-    start_date = date_to_str_without_time(start)
     url = REVIEWS_ENDPOINT + str(app_id_in_appfigures)
     this_page = pages = 1
     while this_page <= pages:
