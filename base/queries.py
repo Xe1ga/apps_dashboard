@@ -58,8 +58,7 @@ def add_reviews():
                               pub_date=review_entry.pub_date,
                               stars=review_entry.stars
                               )
-                       for review_entry in get_reviews_info(game.app_id_in_appfigures,
-                                                            get_last_date_entry(game.id, session))]
+                       for review_entry in get_reviews_info(game, get_last_date_entry(game.id, session))]
             game.reviews = reviews
             session.add(game)
 

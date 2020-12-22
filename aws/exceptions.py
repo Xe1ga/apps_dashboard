@@ -18,3 +18,10 @@ class S3ClientError(Error):
     Исключение, возникающее при работе boto3 с S3 bucket
     """
     pass
+
+
+class Boto3CoreError(Error):
+    """
+    Базовое исключение при работе boto3
+    """
+    pass

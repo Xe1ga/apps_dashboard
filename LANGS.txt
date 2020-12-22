@@ -1,0 +1,18 @@
+ENDPOINT = data/languages
+gb English
+nl Dutch
+es Spanish
+ko Korean
+no Norwegian
+pl Polish
+sv Swedish
+fr French
+de German
+it Italian
+il Hebrew
+ru Russian
+cn Chinese
+jp Japanese
+hi Hindi
+pt Portugese
+ar Arabic

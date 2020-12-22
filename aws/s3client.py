@@ -4,10 +4,10 @@
 import boto3
 
 from typing import Optional
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, BotoCoreError
 
 from settings import LOCALSTACK_S3_ENDPOINT_URL, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, REGION, BUCKET
-from aws.exceptions import S3ClientError
+from aws.exceptions import S3ClientError, Boto3CoreError
 from appfigures.httpclient import get_response
 
 
@@ -56,9 +56,13 @@ def is_exist_bucket(bucket_name: Optional[str] = BUCKET) -> bool:
     :return:
     """
     client_config = get_client()
-    s3_client = boto3.client(**client_config)
-    response = s3_client.list_buckets()
-    buckets = [bucket["Name"] for bucket in response['Buckets']]
+    try:
+        s3_client = boto3.client(**client_config)
+        response = s3_client.list_buckets()
+        buckets = [bucket["Name"] for bucket in response['Buckets']]
+    except BotoCoreError as err:
+        raise Boto3CoreError(f'Ошибка создания клиента s3. Проверьте доступность ресурса. {err}')
+
     return bucket_name in buckets
 
 

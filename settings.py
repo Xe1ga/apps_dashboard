@@ -43,7 +43,16 @@ PRODUCTS_ENDPOINT = env.str('PRODUCTS_ENDPOINT')
 REVIEWS_ENDPOINT = env.str('REVIEWS_ENDPOINT')
 
 # Язык, на котором написан отзыв. Пример значения "en,ru", если переменная среды не определена ищем на всех языках.
-PREDICTED_LANGUAGES = env('PREDICTED_LANGUAGES', cast=list, subcast=str, default=None)
+# Используется для пост отбора (после request) для платформы amazon_appstore
+PREDICTED_LANGS = env('PREDICTED_LANGS', cast=list, subcast=str, default=None)
+
+# Язык, на котором написан отзыв. Пример значения "gb,ru", если переменная среды не определена ищем на всех языках.
+# Используются для google_play
+LANGS = env.str('LANGS', default=None)
+
+# Код страны, используется для отбора на платформе apple
+COUNTRIES = env.str('COUNTRIES', default=None)
+
 # endpoint корзины s3
 LOCALSTACK_S3_ENDPOINT_URL = env.str('LOCALSTACK_S3_ENDPOINT_URL')
 
