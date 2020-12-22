@@ -56,5 +56,13 @@ def calc_past_date(value: int) -> datetime:
     :param value:
     :return:
     """
-    past_date = datetime.now() - timedelta(days=value)
-    return past_date
+    return datetime.now() - timedelta(days=value)
+
+
+def get_next_day(value: datetime) -> datetime:
+    """
+    Вернуть следующий день
+    :param value:
+    :return:
+    """
+    return value + timedelta(days=1)

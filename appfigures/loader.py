@@ -3,6 +3,7 @@
 
 from decimal import Decimal
 from typing import Generator, Optional
+from datetime import datetime
 
 from utils import str_to_date, is_common_elements_exist
 from settings import PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, RECORDS_PER_PAGE, PREDICTED_LANGS, LANGS, COUNTRIES
@@ -76,17 +77,19 @@ def get_reviews_info(game: Game, start: Optional[str]) -> Generator:
                    if is_need_select_by_langs_amazon(game) else get_review(game, start))
 
 
-def get_params(game: Game, start: Optional[str]) -> dict:
+def get_params(game: Game, this_page: int, start: Optional[str]) -> dict:
     """
     Возвращает словарь с параметрами для запроса по комментариям
     :param game:
+    :param this_page:
     :param start:
     :return:
     """
     params = {
-        "pages": 1,
+        "page": this_page,
         "count": RECORDS_PER_PAGE,
-        "start": start
+        "start": start,
+        "end": datetime.now().date()
     }
     if is_need_select_by_langs_apple(game):
         params["countries"] = COUNTRIES
@@ -104,17 +107,17 @@ def get_review(game: Game, start: Optional[str]) -> Generator:
     :return:
     """
     url = REVIEWS_ENDPOINT + str(game.app_id_in_appfigures)
-    params = get_params(game, start)
-    pages = 1
+    this_page = pages = 1
 
-    while params["pages"] <= pages:
+    while this_page <= pages:
+        params = get_params(game, this_page, start)
         data = get_deserialize_response_data(
             url,
             **params
         )
         yield from data.get('reviews')
         pages = data.get('pages')
-        params["pages"] += 1
+        this_page += 1
 
 
 def filter_by_language(reviews: Generator) -> Generator:

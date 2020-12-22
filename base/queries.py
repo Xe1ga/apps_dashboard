@@ -7,7 +7,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from typing import Any, Iterator
 from contextlib import contextmanager
 
-from utils import get_values_list_from_dict, date_to_str_without_time
+from utils import get_values_list_from_dict, date_to_str_without_time, get_next_day
 from settings import GAMES
 from appfigures.structure import get_game_entry_structure, GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info
@@ -58,7 +58,8 @@ def add_reviews():
                               pub_date=review_entry.pub_date,
                               stars=review_entry.stars
                               )
-                       for review_entry in get_reviews_info(game, get_last_date_entry(game.id, session))]
+                       for review_entry in get_reviews_info(game, get_start_date(game.id, session))]
+
             game.reviews = reviews
             session.add(game)
 
@@ -66,9 +67,8 @@ def add_reviews():
 def mark_inactive_games():
     """Отметить значение active = False у тех игр, которые не указаны в переменной окружения как активные"""
     with create_session() as session:
-        session.query(Game).filter(
-            Game.app_id_in_store.notin_(get_values_list_from_dict(GAMES))
-        ).update(active=False, synchronize_session=False)
+        session.query(Game).filter(Game.app_id_in_store.notin_(get_values_list_from_dict(GAMES))). \
+            update({Game.active: False}, synchronize_session=False)
 
 
 def select_game(store: str, app_id_in_store: str, session: Session):
@@ -101,7 +101,7 @@ def add_game_entry(game_entry: GameEntry, session: Session):
     session.add(game)
 
 
-def get_last_date_entry(game_id: str, session: Session) -> str:
+def get_start_date(game_id: str, session: Session) -> str:
     """
     Возвращает дату, с которой будет начинаться поиск комментариев
     :param game_id:
@@ -110,7 +110,7 @@ def get_last_date_entry(game_id: str, session: Session) -> str:
     """
     last_date = session.query(func.max(Review.pub_date)). \
         filter(Review.game_id == game_id).group_by(Review.game_id).scalar()
-    return date_to_str_without_time(last_date) if last_date else None
+    return date_to_str_without_time(get_next_day(last_date)) if last_date else None
 
 
 def update_game_table():
