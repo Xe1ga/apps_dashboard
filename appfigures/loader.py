@@ -89,11 +89,11 @@ def get_params(game: Game, this_page: int, start: Optional[str]) -> dict:
         "page": this_page,
         "count": RECORDS_PER_PAGE,
         "start": start,
-        "end": datetime.now().date()
+        "end": datetime.now().date(),
     }
     if is_need_select_by_langs_apple(game):
         params["countries"] = COUNTRIES
-    else:
+    elif is_need_select_by_langs_google(game):
         params["langs"] = LANGS
 
     return params
