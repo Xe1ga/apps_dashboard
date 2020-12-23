@@ -3,9 +3,9 @@
 
 from decimal import Decimal
 from typing import Generator, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from utils import str_to_date, is_common_elements_exist
+from utils import str_to_date, is_common_elements_exist, date_to_str_without_time
 from settings import PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, RECORDS_PER_PAGE, PREDICTED_LANGS, LANGS, COUNTRIES
 from appfigures.structure import GameEntry, ReviewEntry
 from appfigures.httpclient import get_deserialize_response_data
@@ -89,7 +89,7 @@ def get_params(game: Game, this_page: int, start: Optional[str]) -> dict:
         "page": this_page,
         "count": RECORDS_PER_PAGE,
         "start": start,
-        "end": datetime.now().date(),
+        "end": date_to_str_without_time(datetime.now()),
     }
     if is_need_select_by_langs_apple(game):
         params["countries"] = COUNTRIES
