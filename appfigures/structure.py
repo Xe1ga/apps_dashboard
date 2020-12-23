@@ -28,15 +28,3 @@ class ReviewEntry(NamedTuple):
     author: str
     pub_date: datetime
     stars: float
-
-
-def get_game_entry_structure(data: Game):
-    return GameEntry(
-        app_id_in_appfigures=data.app_id_in_appfigures,
-        app_id_in_store=data.app_id_in_store,
-        game_name=data.game_name,
-        id_store=data.id_store,
-        store=data.store,
-        icon_link_appfigures=data.icon_link_appfigures,
-        icon_link_s3=data.icon_link_s3
-    )

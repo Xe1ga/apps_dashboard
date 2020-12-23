@@ -6,10 +6,11 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from typing import Any, Iterator
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 
 from utils import get_values_list_from_dict, date_to_str_without_time, get_next_day
 from settings import GAMES
-from appfigures.structure import get_game_entry_structure, GameEntry
+from appfigures.structure import GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
 from base.connect import engine, Base, Session
@@ -60,8 +61,9 @@ def add_reviews():
                               )
                        for review_entry in get_reviews_info(game, get_start_date(game.id, session))]
 
-            game.reviews = reviews
-            session.add(game)
+            if reviews:
+                game.reviews = reviews
+                session.add(game)
 
 
 def mark_inactive_games():
@@ -110,7 +112,8 @@ def get_start_date(game_id: str, session: Session) -> str:
     """
     last_date = session.query(func.max(Review.pub_date)). \
         filter(Review.game_id == game_id).group_by(Review.game_id).scalar()
-    return date_to_str_without_time(get_next_day(last_date)) if last_date else None
+    return date_to_str_without_time(get_next_day(last_date)) if last_date else date_to_str_without_time(
+        datetime.now() - timedelta(days=3))
 
 
 def update_game_table():
@@ -123,6 +126,5 @@ def update_game_table():
                 if game_info_from_base is None:
                     add_game_entry(game_info_from_app, session)
                 else:
-                    if get_game_entry_structure(game_info_from_base) != game_info_from_app:
-                        for field in game_info_from_app._fields:
-                            setattr(game_info_from_base, field, getattr(game_info_from_app, field))
+                    for field in game_info_from_app._fields:
+                        setattr(game_info_from_base, field, getattr(game_info_from_app, field))

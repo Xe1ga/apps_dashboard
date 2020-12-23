@@ -39,7 +39,7 @@ def is_need_select_by_langs_apple(game: Game) -> bool:
     :param game:
     :return:
     """
-    return COUNTRIES is not None and game.id == 1
+    return COUNTRIES is not None and game.id_store == 1
 
 
 def is_need_select_by_langs_google(game: Game) -> bool:
@@ -48,7 +48,7 @@ def is_need_select_by_langs_google(game: Game) -> bool:
     :param game:
     :return:
     """
-    return LANGS is not None and game.id == 2
+    return LANGS is not None and game.id_store == 2
 
 
 def is_need_select_by_langs_amazon(game: Game) -> bool:
@@ -57,7 +57,7 @@ def is_need_select_by_langs_amazon(game: Game) -> bool:
     :param game:
     :return:
     """
-    return PREDICTED_LANGS is not None and game.id == 3
+    return PREDICTED_LANGS is not None and game.id_store == 3
 
 
 def get_reviews_info(game: Game, start: Optional[str]) -> Generator:
