@@ -3,7 +3,7 @@
 
 from decimal import Decimal
 from typing import Generator, Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from utils import str_to_date, is_common_elements_exist, date_to_str_without_time
 from settings import PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, RECORDS_PER_PAGE, PREDICTED_LANGS, LANGS, COUNTRIES

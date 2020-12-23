@@ -7,7 +7,6 @@
 
 from typing import NamedTuple, Optional
 from datetime import datetime
-from base.models import Game
 
 
 class GameEntry(NamedTuple):

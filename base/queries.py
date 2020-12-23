@@ -6,7 +6,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from typing import Any, Iterator
 from contextlib import contextmanager
-from datetime import datetime, timedelta
 
 from utils import get_values_list_from_dict, date_to_str_without_time, get_next_day
 from settings import GAMES
