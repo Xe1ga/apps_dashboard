@@ -82,6 +82,7 @@ def test_get_response_http_exception(mock_requests_get, url, parameters):
 
 @pytest.mark.parametrize('url, parameters', request_attributes)
 def test_get_deserialize_response_data(url, parameters):
+    """Тест get_deserialize_response_data при успешном выполнении"""
     with patch('appfigures.httpclient._get_response') as mock_get_response_data:
         mock_get_response_data.return_value.json.side_effect = get_structure_response_data
         response_json = get_deserialize_response_data(url, **parameters)
@@ -91,10 +92,24 @@ def test_get_deserialize_response_data(url, parameters):
 @pytest.mark.parametrize('url, parameters', request_attributes)
 @patch('appfigures.httpclient._get_response')
 def test_get_deserialize_response_data_exception(mock_get_response, url, parameters):
-    """Тест на фугкцию get_response, когда возникают исключения при десериализации"""
+    """Тест на фугкцию get_deserialize_response_data, когда возникают исключения при десериализации"""
     response_return_value_with_json_exception(mock_get_response)
     response_json = get_deserialize_response_data(url, **parameters)
     assert response_json is None
 
 
+@patch.object(requests, 'get')
+def test_get_response_with_stream_200_ok(mock_requests_get, url):
+    """Тест на функцию get_response_with_stream, когда возвращается статус 200 ОК"""
+    response_return_value(mock_requests_get)
+    response = get_response_with_stream(url)
+    assert response.json() == JSON_DATA
 
+
+@patch.object(requests, 'get', return_value=Mock(status_code=404))
+def test_get_response_http_exception(mock_requests_get, url):
+    """Тест на функцию get_response_with_stream, когда возникют исключения HTTPError"""
+    mock_requests_get.return_value.status_code = 404
+    mock_requests_get.return_value.raise_for_status.side_effect = raise_http_error
+    with pytest.raises(HTTPError):
+        get_response_with_stream(url)
