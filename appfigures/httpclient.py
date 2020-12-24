@@ -65,7 +65,7 @@ def get_deserialize_response_data(url: str, **querystring_params) -> dict:
     return response_json
 
 
-def get_response(url: str) -> requests.Response:
+def get_response_with_stream(url: str) -> requests.Response:
     """
     Вернуть ответ запроса с параметром stream=True
     :param url:

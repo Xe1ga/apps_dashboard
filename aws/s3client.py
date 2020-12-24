@@ -8,7 +8,7 @@ from botocore.exceptions import ClientError, BotoCoreError
 
 from settings import LOCALSTACK_S3_ENDPOINT_URL, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID, REGION, BUCKET
 from aws.exceptions import S3ClientError, Boto3CoreError
-from appfigures.httpclient import get_response
+from appfigures.httpclient import get_response_with_stream
 
 
 def get_client():
@@ -108,7 +108,7 @@ def transfer_image_and_return_link(app_id_in_appfigures: int, name: str, icon_li
     :param icon_link:
     :return:
     """
-    response = get_response(icon_link)
+    response = get_response_with_stream(icon_link)
     object_name = name + str(app_id_in_appfigures) + "." + response.headers.get('Content-Type').split("/")[1]
     file_url = upload_fileobj(response.raw, object_name)
     return file_url
