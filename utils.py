@@ -41,15 +41,6 @@ def is_common_elements_exist(l1: list, l2: list) -> bool:
     return bool(set(l1) & set(l2))
 
 
-def get_values_list_from_dict(d: dict) -> list:
-    """
-    Получить список значений словаря, для случая когда values - строки с разделителями |
-    :param d:
-    :return:
-    """
-    return "|".join(list(d.values())).split("|")
-
-
 def calc_past_date(value: int) -> datetime:
     """
     Вычислить дату в прошлом, за value дней до текущей даты
@@ -66,3 +57,12 @@ def get_next_day(value: datetime) -> datetime:
     :return:
     """
     return value + timedelta(days=1)
+
+
+def get_game_review_langs(game_setting: dict) -> list:
+    """
+    Вернуть список языков комментариев к текущей игре, указаны в настройках
+    :param game_setting:
+    :return:
+    """
+    return game_setting["langs"].replace(" ", "").split(",")

@@ -7,8 +7,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from typing import Any, Iterator
 from contextlib import contextmanager
 
-from utils import get_values_list_from_dict, date_to_str_without_time, get_next_day
-from settings import GAMES
+from utils import date_to_str_without_time, get_next_day
+from settings import GAME_SETTINGS
 from appfigures.structure import GameEntry
 from appfigures.loader import get_reviews_info, get_one_game_info
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
@@ -67,7 +67,7 @@ def add_reviews():
 def mark_inactive_games():
     """Отметить значение active = False у тех игр, которые не указаны в переменной окружения как активные"""
     with create_session() as session:
-        session.query(Game).filter(Game.app_id_in_store.notin_(get_values_list_from_dict(GAMES))). \
+        session.query(Game).filter(Game.app_id_in_store.notin_(list(GAME_SETTINGS.keys()))). \
             update({Game.active: False}, synchronize_session=False)
 
 
@@ -116,12 +116,11 @@ def get_start_date(game_id: str, session: Session) -> str:
 def update_game_table():
     """Обновить таблицу игр, удалив лишние строки, добавив отсутствующие и обновив изменившиеся записи"""
     with create_session() as session:
-        for store, apps_id in GAMES.items():
-            for app_id_in_store in apps_id.split("|"):
-                game_info_from_base = select_game(store, app_id_in_store, session)
-                game_info_from_app = get_one_game_info(store, app_id_in_store)
-                if game_info_from_base is None:
-                    add_game_entry(game_info_from_app, session)
-                else:
-                    for field in game_info_from_app._fields:
-                        setattr(game_info_from_base, field, getattr(game_info_from_app, field))
+        for id_in_store, setting in GAME_SETTINGS.items():
+            game_info_from_base = select_game(setting["store_name"], id_in_store, session)
+            game_info_from_app = get_one_game_info(setting["store_name"], id_in_store)
+            if game_info_from_base is None:
+                add_game_entry(game_info_from_app, session)
+            else:
+                for field in game_info_from_app._fields:
+                    setattr(game_info_from_base, field, getattr(game_info_from_app, field))

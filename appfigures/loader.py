@@ -5,8 +5,9 @@ from decimal import Decimal
 from typing import Generator, Optional
 from datetime import datetime
 
-from utils import str_to_date, is_common_elements_exist, date_to_str_without_time
-from settings import PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, RECORDS_PER_PAGE, PREDICTED_LANGS, LANGS, COUNTRIES
+from utils import str_to_date, is_common_elements_exist, date_to_str_without_time, get_game_review_langs
+from settings import (PRODUCTS_ENDPOINT, REVIEWS_ENDPOINT, RECORDS_PER_PAGE, FILTER_BY_COUNTRIES, FILTER_BY_LANGS,
+                      FILTER_BY_PREDICTED_LANGS, GAME_SETTINGS)
 from appfigures.structure import GameEntry, ReviewEntry
 from appfigures.httpclient import get_deserialize_response_data
 from aws.s3client import transfer_image_and_return_link
@@ -33,31 +34,31 @@ def get_game_entry(g: dict) -> GameEntry:
                      )
 
 
-def is_need_select_by_langs_apple(game: Game) -> bool:
+def is_filter_by_countries(game: Game) -> bool:
     """
-    Определяет необходимость отбора комментариев по стране в параметре запроса для приложений на apple store
+    Определяет необходимость отбора комментариев по стране в параметре запроса
     :param game:
     :return:
     """
-    return COUNTRIES is not None and game.id_store == 1
+    return game.app_id_in_store in FILTER_BY_COUNTRIES if FILTER_BY_COUNTRIES else False
 
 
-def is_need_select_by_langs_google(game: Game) -> bool:
+def is_filter_by_langs(game: Game) -> bool:
     """
-    Определяет необходимость отбора по языку в параметре запроса для приложений на google_play store
+    Определяет необходимость отбора по языку в параметре запроса для приложений
     :param game:
     :return:
     """
-    return LANGS is not None and game.id_store == 2
+    return game.app_id_in_store in FILTER_BY_LANGS if FILTER_BY_LANGS else False
 
 
-def is_need_select_by_langs_amazon(game: Game) -> bool:
+def is_post_filtration_by_predicted_langs(game: Game) -> bool:
     """
-    Определяет необходимость пост сортировки по языку для amazon
+    Определяет необходимость пост сортировки по языку
     :param game:
     :return:
     """
-    return PREDICTED_LANGS is not None and game.id_store == 3
+    return game.app_id_in_store in FILTER_BY_PREDICTED_LANGS if FILTER_BY_PREDICTED_LANGS else False
 
 
 def get_reviews_info(game: Game, start: Optional[str]) -> Generator:
@@ -73,8 +74,8 @@ def get_reviews_info(game: Game, start: Optional[str]) -> Generator:
                                          pub_date=str_to_date(r.get("date")),
                                          stars=Decimal(r.get("stars"))
                                          ),
-                   filter_by_language(get_review(game, start))
-                   if is_need_select_by_langs_amazon(game) else get_review(game, start))
+                   filter_by_language(get_review(game, start), game)
+                   if is_post_filtration_by_predicted_langs(game) else get_review(game, start))
 
 
 def get_params(game: Game, this_page: int, start: Optional[str]) -> dict:
@@ -91,10 +92,13 @@ def get_params(game: Game, this_page: int, start: Optional[str]) -> dict:
         "start": start,
         "end": date_to_str_without_time(datetime.now()),
     }
-    if is_need_select_by_langs_apple(game):
-        params["countries"] = COUNTRIES
-    elif is_need_select_by_langs_google(game):
-        params["langs"] = LANGS
+
+    langs = GAME_SETTINGS[game.app_id_in_store]["langs"].replace(" ", "")
+
+    if is_filter_by_countries(game):
+        params["countries"] = langs
+    elif is_filter_by_langs(game):
+        params["langs"] = langs
 
     return params
 
@@ -120,13 +124,16 @@ def get_review(game: Game, start: Optional[str]) -> Generator:
         this_page += 1
 
 
-def filter_by_language(reviews: Generator) -> Generator:
+def filter_by_language(reviews: Generator, game: Game) -> Generator:
     """
     Возвращает отфильтрованные по языку комментарии
     :param reviews:
+    :param game:
     :return:
     """
-    yield from filter(lambda r: is_common_elements_exist(r.get("predicted_langs"), PREDICTED_LANGS), reviews)
+    yield from filter(lambda r: is_common_elements_exist(r.get("predicted_langs"),
+                                                         get_game_review_langs(GAME_SETTINGS[game.app_id_in_store])),
+                      reviews)
 
 
 def get_one_game_info(store: str, app_id_in_store: str) -> GameEntry:

@@ -3,8 +3,9 @@
 
 from envparse import env
 
+env.read_envfile()
 
-# Подключение к API
+# Подключение к API appfigures
 USERNAME = env.str('USERNAME_AF')
 
 PASSWORD = env.str('PASSWORD')
@@ -12,6 +13,12 @@ PASSWORD = env.str('PASSWORD')
 APP_KEY = env.str('APP_KEY')
 
 BASE_URL = env.str('BASE_URL')
+
+RECORDS_PER_PAGE = env.int('RECORDS_PER_PAGE')
+
+PRODUCTS_ENDPOINT = env.str('PRODUCTS_ENDPOINT')
+
+REVIEWS_ENDPOINT = env.str('REVIEWS_ENDPOINT')
 
 
 # Параметры подключения к БД проекта
@@ -28,31 +35,7 @@ DB_USER = env.str('DB_USER')
 DB_PASSWORD = env.str('DB_PASSWORD')
 
 
-# Настройки проекта
-
-# Словарь ключ-имя магазина, значения - строки, коды игр в данном магазине с разделителем "|"
-GAMES = env('GAMES', cast=dict, subcast=str)
-
-# Пересоздать схему БД заново перед выполнением скрипта (удалить и создать таблицы)
-RECREATE_DB_SCHEMA = env.bool('RECREATE_DB_SCHEMA', default=False)
-
-RECORDS_PER_PAGE = env.int('RECORDS_PER_PAGE')
-
-PRODUCTS_ENDPOINT = env.str('PRODUCTS_ENDPOINT')
-
-REVIEWS_ENDPOINT = env.str('REVIEWS_ENDPOINT')
-
-# Язык, на котором написан отзыв. Пример значения "en,ru", если переменная среды не определена ищем на всех языках.
-# Используется для пост отбора (после request) для платформы amazon_appstore
-PREDICTED_LANGS = env('PREDICTED_LANGS', cast=list, subcast=str, default=None)
-
-# Язык, на котором написан отзыв. Пример значения "gb,ru", если переменная среды не определена ищем на всех языках.
-# Используются для google_play
-LANGS = env.str('LANGS', default=None)
-
-# Код страны, используется для отбора на платформе apple
-COUNTRIES = env.str('COUNTRIES', default=None)
-
+# S3 bucket
 # endpoint корзины s3
 LOCALSTACK_S3_ENDPOINT_URL = env.str('LOCALSTACK_S3_ENDPOINT_URL')
 
@@ -63,3 +46,22 @@ AWS_SECRET_ACCESS_KEY = env.str('AWS_SECRET_ACCESS_KEY')
 REGION = env.str('REGION')
 
 BUCKET = env.str('BUCKET')
+
+
+# Настройки проекта
+
+# Список из словарей - информация об игре: id игры в store, имя store, языки для фильтрации комментариев
+GAME_SETTINGS = env.json('GAME_SETTINGS')
+
+# Список игр, по которым необходима фильтрация по языку комментария после request запроса
+FILTER_BY_PREDICTED_LANGS = env('FILTER_BY_PREDICTED_LANGS', cast=list, subcast=str, default=None)
+
+# Список игр, по которым необходима фильтрация по языку комментария по параметру COUNTRIES в запросе
+FILTER_BY_COUNTRIES = env('FILTER_BY_COUNTRIES', cast=list, subcast=str, default=None)
+
+# Список игр, по которым необходима фильтрация по языку комментария по параметру LANGS в запросе
+FILTER_BY_LANGS = env('FILTER_BY_LANGS', cast=list, subcast=str, default=None)
+
+# Пересоздать схему БД заново перед выполнением скрипта (удалить и создать таблицы)
+RECREATE_DB_SCHEMA = env.bool('RECREATE_DB_SCHEMA', default=False)
+
