@@ -8,10 +8,10 @@ from appfigures.httpclient import _get_response, get_deserialize_response_data, 
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError
 
 
-URL = "http://url"
+endpoint_url = "http://url"
 
 
-PARAMS = {
+params = {
     "page": 1,
     "count": 100,
     "start": datetime.now() - timedelta(days=1),
@@ -22,7 +22,7 @@ PARAMS = {
 JSON_DATA = {"key1": "val1", "key2": "val2"}
 
 
-request_attributes = [(URL, PARAMS)]
+request_attributes = [(endpoint_url, params)]
 
 
 mock_status_200 = Mock(status_code=200, json={"created_at": "date", "author": {"login": "name"}})
@@ -98,6 +98,7 @@ def test_get_deserialize_response_data_exception(mock_get_response, url, paramet
     assert response_json is None
 
 
+@pytest.mark.parametrize('url', [endpoint_url])
 @patch.object(requests, 'get')
 def test_get_response_with_stream_200_ok(mock_requests_get, url):
     """Тест на функцию get_response_with_stream, когда возвращается статус 200 ОК"""
@@ -106,6 +107,7 @@ def test_get_response_with_stream_200_ok(mock_requests_get, url):
     assert response.json() == JSON_DATA
 
 
+@pytest.mark.parametrize('url', [endpoint_url])
 @patch.object(requests, 'get', return_value=Mock(status_code=404))
 def test_get_response_http_exception(mock_requests_get, url):
     """Тест на функцию get_response_with_stream, когда возникют исключения HTTPError"""

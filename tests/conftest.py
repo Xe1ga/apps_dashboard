@@ -1,7 +1,7 @@
 import pytest
 
+from typing import NamedTuple
 
-@pytest.fixture()
-def url():
-    """Возвращает фикстуру url"""
-    return "https://github.com/Xe1ga/repository-statistics"
+from settings import FILTER_BY_COUNTRIES
+
+pytest_plugins = ['appfigures_fixtures']
