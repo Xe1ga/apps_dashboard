@@ -64,4 +64,3 @@ FILTER_BY_LANGS = env('FILTER_BY_LANGS', cast=list, subcast=str, default=None)
 
 # Пересоздать схему БД заново перед выполнением скрипта (удалить и создать таблицы)
 RECREATE_DB_SCHEMA = env.bool('RECREATE_DB_SCHEMA', default=False)
-
