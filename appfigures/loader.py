@@ -93,12 +93,13 @@ def get_params(game: Game, this_page: int, start: Optional[str]) -> dict:
         "end": date_to_str_without_time(datetime.now()),
     }
 
-    langs = GAME_SETTINGS[game.app_id_in_store]["langs"].replace(" ", "")
+    langs = GAME_SETTINGS.get(game.app_id_in_store).get("langs")
 
-    if is_filter_by_countries(game):
-        params["countries"] = langs
-    elif is_filter_by_langs(game):
-        params["langs"] = langs
+    if langs:
+        if is_filter_by_countries(game):
+            params["countries"] = langs.replace(" ", "")
+        elif is_filter_by_langs(game):
+            params["langs"] = langs.replace(" ", "")
 
     return params
 
