@@ -1,27 +1,6 @@
 import pytest
 
-from datetime import datetime
-
-from settings import (GAME_SETTINGS, FILTER_BY_COUNTRIES, FILTER_BY_LANGS, FILTER_BY_PREDICTED_LANGS, RECORDS_PER_PAGE)
-from base.models import Game
-from utils import date_to_str_without_time
-
-
-@pytest.fixture(scope="function")
-def get_games():
-    """Фикстура игры"""
-    game = Game(
-        id=1,
-        app_id_in_appfigures=3232323,
-        app_id_in_store="id_game_in_store",
-        game_name="game name",
-        id_store=1,
-        store="store name",
-        icon_link_appfigures="http://",
-        icon_link_s3="http://s3",
-        active=1
-    )
-    return game
+from settings import (GAME_SETTINGS, FILTER_BY_COUNTRIES, FILTER_BY_LANGS, FILTER_BY_PREDICTED_LANGS)
 
 
 @pytest.fixture(scope="function")
@@ -62,5 +41,12 @@ def add_game_settings_for_countries_filter(get_games):
 @pytest.fixture(scope="function")
 def add_game_settings(get_games):
     GAME_SETTINGS[get_games.app_id_in_store] = {"store_name": "apple"}
+    yield
+    GAME_SETTINGS.pop(get_games.app_id_in_store)
+
+
+@pytest.fixture(scope="function")
+def add_game_settings_for_post_filtration(get_games):
+    GAME_SETTINGS[get_games.app_id_in_store] = {"store_name": "amazon_appstore", "langs": "ru"}
     yield
     GAME_SETTINGS.pop(get_games.app_id_in_store)

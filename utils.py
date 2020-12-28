@@ -65,4 +65,7 @@ def get_game_review_langs(game_setting: dict) -> list:
     :param game_setting:
     :return:
     """
-    return game_setting["langs"].replace(" ", "").split(",")
+    langs = game_setting.get("langs")
+    if langs:
+        return langs.replace(" ", "").split(",")
+    return []
