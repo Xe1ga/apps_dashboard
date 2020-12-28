@@ -16,7 +16,7 @@ from base.connect import engine, Base, Session
 from base.models import Game, Review
 
 
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
 
 
 @contextmanager
