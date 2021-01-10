@@ -1,12 +1,12 @@
 import pytest
 
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 from datetime import datetime
 
 from settings import RECORDS_PER_PAGE
 from utils import date_to_str_without_time
 from appfigures.loader import (is_filter_by_countries, is_filter_by_langs, is_post_filtration_by_predicted_langs,
-                               get_reviews_info, get_params, get_review, filter_by_language)
+                               get_params, get_review, filter_by_language)
 
 
 expected_result_with_date = {
@@ -52,14 +52,14 @@ response_data = {"reviews": [{'author': 'author', 'title': 'title',
 
 
 response_data_en = {"reviews": [{'author': 'author', 'title': 'title',
-                              'review': 'review', 'original_title': 'original_title',
-                              'original_review': 'original_review', 'stars': '5.00', 'iso': 'RU',
-                              'version': None, 'date': '2020-12-26T18:07:08', 'deleted': False,
-                              'has_response': False, 'product': 31599121121, 'product_id': 31599121121,
-                              'product_name': 'product_name', 'vendor_id': '664575829',
-                              'store': 'apple', 'weight': 0, 'id': 'id',
-                              'predicted_langs': ['en']}],
-                 "pages": 1}
+                                 'review': 'review', 'original_title': 'original_title',
+                                 'original_review': 'original_review', 'stars': '5.00', 'iso': 'RU',
+                                 'version': None, 'date': '2020-12-26T18:07:08', 'deleted': False,
+                                 'has_response': False, 'product': 31599121121, 'product_id': 31599121121,
+                                 'product_name': 'product_name', 'vendor_id': '664575829',
+                                 'store': 'apple', 'weight': 0, 'id': 'id',
+                                 'predicted_langs': ['en']}],
+                    "pages": 1}
 
 
 def test_is_filter_by_countries_true(get_games, filter_by_countries):
@@ -134,7 +134,7 @@ def test_get_deserialize_response_data_exception(mock_response_data, get_games, 
     assert list(data) == response_data.get("reviews")
 
 
-def get_reviews_gen(r: list):
+def get_reviews_gen(r):
     yield from r.get("reviews")
 
 
@@ -146,6 +146,3 @@ def test_filter_by_language(reviews, expected_result, get_games):
 
     filter_data = filter_by_language(reviews, get_games)
     assert list(filter_data) == expected_result
-
-
-
