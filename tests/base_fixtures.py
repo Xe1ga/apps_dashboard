@@ -20,14 +20,22 @@ def base_meta_data():
 
 
 @pytest.fixture(scope="function")
-def add_game_in_db(get_games, db_session):
-    db_session.add(get_games)
+def add_game_in_db(game_db, db_session):
+    db_session.add(game_db)
     db_session.flush()
     yield
-    db_session.query(Game).filter(Game.id == get_games.id).delete()
+    db_session.query(Game).filter(Game.id == game_db.id).delete()
     db_session.flush()
 
 
 @pytest.fixture(scope="function")
-def reviews(get_review_entry):
-    return [get_review_entry]
+def add_review_in_db(db_session, add_game_in_db, review_db):
+    game = db_session.query(Game).filter(Game.active.is_(True)).first()
+    game.reviews.extend([review_db])
+    db_session.flush()
+    yield
+
+
+@pytest.fixture(scope="function")
+def reviews(review_entry):
+    return [review_entry]

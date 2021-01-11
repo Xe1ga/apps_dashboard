@@ -4,49 +4,49 @@ from settings import (GAME_SETTINGS, FILTER_BY_COUNTRIES, FILTER_BY_LANGS, FILTE
 
 
 @pytest.fixture(scope="function")
-def filter_by_countries(get_games):
-    FILTER_BY_COUNTRIES.append(get_games.app_id_in_store)
+def filter_by_countries(game_db):
+    FILTER_BY_COUNTRIES.append(game_db.app_id_in_store)
     yield
-    FILTER_BY_COUNTRIES.remove(get_games.app_id_in_store)
+    FILTER_BY_COUNTRIES.remove(game_db.app_id_in_store)
 
 
 @pytest.fixture(scope="function")
-def filter_by_langs(get_games):
-    FILTER_BY_LANGS.append(get_games.app_id_in_store)
+def filter_by_langs(game_db):
+    FILTER_BY_LANGS.append(game_db.app_id_in_store)
     yield
-    FILTER_BY_LANGS.remove(get_games.app_id_in_store)
+    FILTER_BY_LANGS.remove(game_db.app_id_in_store)
 
 
 @pytest.fixture(scope="function")
-def filter_by_predicted_langs(get_games):
-    FILTER_BY_PREDICTED_LANGS.append(get_games.app_id_in_store)
+def filter_by_predicted_langs(game_db):
+    FILTER_BY_PREDICTED_LANGS.append(game_db.app_id_in_store)
     yield
-    FILTER_BY_PREDICTED_LANGS.remove(get_games.app_id_in_store)
+    FILTER_BY_PREDICTED_LANGS.remove(game_db.app_id_in_store)
 
 
 @pytest.fixture(scope="function")
-def add_game_settings_for_langs_filter(get_games):
-    GAME_SETTINGS[get_games.app_id_in_store] = {"store_name": "google_play", "langs": "gb,ru"}
+def add_game_settings_for_langs_filter(game_db):
+    GAME_SETTINGS[game_db.app_id_in_store] = {"store_name": "google_play", "langs": "gb,ru"}
     yield
-    GAME_SETTINGS.pop(get_games.app_id_in_store)
+    GAME_SETTINGS.pop(game_db.app_id_in_store)
 
 
 @pytest.fixture(scope="function")
-def add_game_settings_for_countries_filter(get_games):
-    GAME_SETTINGS[get_games.app_id_in_store] = {"store_name": "apple", "langs": "GB,RU"}
+def add_game_settings_for_countries_filter(game_db):
+    GAME_SETTINGS[game_db.app_id_in_store] = {"store_name": "apple", "langs": "GB,RU"}
     yield
-    GAME_SETTINGS.pop(get_games.app_id_in_store)
+    GAME_SETTINGS.pop(game_db.app_id_in_store)
 
 
 @pytest.fixture(scope="function")
-def add_game_settings(get_games):
-    GAME_SETTINGS[get_games.app_id_in_store] = {"store_name": "apple"}
+def add_game_settings(game_db):
+    GAME_SETTINGS[game_db.app_id_in_store] = {"store_name": "apple"}
     yield
-    GAME_SETTINGS.pop(get_games.app_id_in_store)
+    GAME_SETTINGS.pop(game_db.app_id_in_store)
 
 
 @pytest.fixture(scope="function")
-def add_game_settings_for_post_filtration(get_games):
-    GAME_SETTINGS[get_games.app_id_in_store] = {"store_name": "amazon_appstore", "langs": "ru"}
+def add_game_settings_for_post_filtration(game_db):
+    GAME_SETTINGS[game_db.app_id_in_store] = {"store_name": "amazon_appstore", "langs": "ru"}
     yield
-    GAME_SETTINGS.pop(get_games.app_id_in_store)
+    GAME_SETTINGS.pop(game_db.app_id_in_store)

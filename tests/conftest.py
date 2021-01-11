@@ -3,7 +3,7 @@ import pytest
 from datetime import datetime
 
 from appfigures.structure import GameEntry, ReviewEntry
-from base.models import Game
+from base.models import Game, Review
 
 
 pytest_plugins = ['appfigures_fixtures', 'base_fixtures']
@@ -12,7 +12,7 @@ GAME_SETTINGS = {"com.playrix.zoo_m3.gplay": {"store_name": "google_play", "lang
 
 
 @pytest.fixture(scope="function")
-def get_games():
+def game_db():
     """Фикстура игры"""
     game = Game(
         id=1,
@@ -29,7 +29,7 @@ def get_games():
 
 
 @pytest.fixture(scope="function")
-def get_game_entry():
+def game_entry():
     """Фикстура игры"""
     game = GameEntry(
         app_id_in_appfigures=333,
@@ -44,12 +44,25 @@ def get_game_entry():
 
 
 @pytest.fixture(scope="function")
-def get_review_entry():
+def review_entry():
     review_entry = ReviewEntry(
         id_in_appfigures="256",
         content="review",
         author="author",
-        pub_date=datetime.now(),
+        pub_date=datetime.now().replace(microsecond=0),
+        stars=5
+        )
+    return review_entry
+
+
+@pytest.fixture(scope="function")
+def review_db():
+    review_entry = Review(
+        id=54,
+        id_in_appfigures="256",
+        content="review",
+        author="author",
+        pub_date=datetime.now().replace(microsecond=0),
         stars=5
         )
     return review_entry
