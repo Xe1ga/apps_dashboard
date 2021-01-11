@@ -46,22 +46,24 @@ def recreate_database_schema():
     Base.metadata.create_all(engine)
 
 
-def add_reviews():
-    """Добавляет комментарии к играм"""
+def add_reviews(session: Session):
+    """
+    Добавляет комментарии к играм
+    :param session:
+    :return:
+    """
+    all_games = session.query(Game).filter(Game.active.is_(True)).all()
+    for game in all_games:
+        reviews = [Review(id_in_appfigures=review_entry.id_in_appfigures,
+                          content=review_entry.content,
+                          author=review_entry.author,
+                          pub_date=review_entry.pub_date,
+                          stars=review_entry.stars
+                          )
+                   for review_entry in get_reviews_info(game, get_start_date(game.id, session))]
 
-    with create_session() as session:
-        all_games = session.query(Game).filter(Game.active.is_(True)).all()
-        for game in all_games:
-            reviews = [Review(id_in_appfigures=review_entry.id_in_appfigures,
-                              content=review_entry.content,
-                              author=review_entry.author,
-                              pub_date=review_entry.pub_date,
-                              stars=review_entry.stars
-                              )
-                       for review_entry in get_reviews_info(game, get_start_date(game.id, session))]
-
-            game.reviews.extend(reviews)
-            session.add(game)
+        game.reviews.extend(reviews)
+        session.add(game)
 
 
 def mark_inactive_games():
@@ -99,6 +101,7 @@ def add_game_entry(game_entry: GameEntry, session: Session):
                 icon_link_s3=game_entry.icon_link_s3
                 )
     session.add(game)
+    session.flush()
 
 
 def get_start_date(game_id: str, session: Session) -> str:
@@ -113,14 +116,13 @@ def get_start_date(game_id: str, session: Session) -> str:
     return date_to_str_without_time(get_next_day(last_date)) if last_date else None
 
 
-def update_game_table():
+def update_game_table(session: Session):
     """Обновить таблицу игр, удалив лишние строки, добавив отсутствующие и обновив изменившиеся записи"""
-    with create_session() as session:
-        for id_in_store, setting in GAME_SETTINGS.items():
-            game_info_from_base = select_game(setting["store_name"], id_in_store, session)
-            game_info_from_app = get_one_game_info(setting["store_name"], id_in_store)
-            if game_info_from_base is None:
-                add_game_entry(game_info_from_app, session)
-            else:
-                for field in game_info_from_app._fields:
-                    setattr(game_info_from_base, field, getattr(game_info_from_app, field))
+    for id_in_store, setting in GAME_SETTINGS.items():
+        game_info_from_base = select_game(setting["store_name"], id_in_store, session)
+        game_info_from_app = get_one_game_info(setting["store_name"], id_in_store)
+        if game_info_from_base is None:
+            add_game_entry(game_info_from_app, session)
+        else:
+            for field in game_info_from_app._fields:
+                setattr(game_info_from_base, field, getattr(game_info_from_app, field))

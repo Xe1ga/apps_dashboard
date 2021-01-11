@@ -7,7 +7,7 @@ from settings import RECREATE_DB_SCHEMA
 from appfigures.exceptions import TimeoutConnectionError, ConnectError, HTTPError, DBError
 from aws.exceptions import S3ClientError, Boto3CoreError
 from aws.s3client import create_bucket, is_exist_bucket
-from base.queries import recreate_database_schema, mark_inactive_games, update_game_table, add_reviews
+from base.queries import create_session, recreate_database_schema, mark_inactive_games, update_game_table, add_reviews
 
 
 def setup_logger():
@@ -40,8 +40,9 @@ def run():
         if not is_exist_bucket():
             create_bucket()
         recreate_database_schema() if RECREATE_DB_SCHEMA else mark_inactive_games()
-        update_game_table()
-        add_reviews()
+        with create_session() as session:
+            update_game_table(session)
+            add_reviews(session)
     except (TimeoutConnectionError, ConnectError, HTTPError, DBError, S3ClientError, Boto3CoreError) as err:
         logger.error(f'Во время работы скрипта произошла ошибка: {err}')
 

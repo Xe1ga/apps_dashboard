@@ -1,6 +1,8 @@
 import pytest
 
-from appfigures.structure import GameEntry
+from datetime import datetime
+
+from appfigures.structure import GameEntry, ReviewEntry
 from base.models import Game
 
 
@@ -39,3 +41,15 @@ def get_game_entry():
         icon_link_s3="http://s3"
     )
     return game
+
+
+@pytest.fixture(scope="function")
+def get_review_entry():
+    review_entry = ReviewEntry(
+        id_in_appfigures="256",
+        content="review",
+        author="author",
+        pub_date=datetime.now(),
+        stars=5
+        )
+    return review_entry
